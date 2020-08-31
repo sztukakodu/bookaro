@@ -1,8 +1,8 @@
-package pl.sztukakodu.bookaro;
+package pl.sztukakodu.bookaro.catalog.domain;
 
 import java.util.StringJoiner;
 
-class Book {
+public class Book {
     Long id;
     String title;
     String author;
