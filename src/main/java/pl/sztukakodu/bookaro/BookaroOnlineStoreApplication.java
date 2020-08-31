@@ -9,5 +9,4 @@ public class BookaroOnlineStoreApplication {
     public static void main(String[] args) {
         SpringApplication.run(BookaroOnlineStoreApplication.class, args);
     }
-
 }
