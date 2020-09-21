@@ -8,22 +8,35 @@ import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.CreateBookC
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookCommand;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
+import pl.sztukakodu.bookaro.order.application.port.PlaceOrderUseCase;
+import pl.sztukakodu.bookaro.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
+import pl.sztukakodu.bookaro.order.application.port.PlaceOrderUseCase.PlaceOrderResponse;
+import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
+import pl.sztukakodu.bookaro.order.domain.OrderItem;
+import pl.sztukakodu.bookaro.order.domain.Recipient;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
 class ApplicationStartup implements CommandLineRunner {
 
     private final CatalogUseCase catalog;
+    private final PlaceOrderUseCase placeOrder;
+    private final QueryOrderUseCase queryOrder;
     private final String title;
     private final Long limit;
 
     public ApplicationStartup(
         CatalogUseCase catalog,
+        PlaceOrderUseCase placeOrder,
+        QueryOrderUseCase queryOrder,
         @Value("${bookaro.catalog.query}") String title,
         @Value("${bookaro.catalog.limit}") Long limit
     ) {
         this.catalog = catalog;
+        this.placeOrder = placeOrder;
+        this.queryOrder = queryOrder;
         this.title = title;
         this.limit = limit;
     }
@@ -31,16 +44,55 @@ class ApplicationStartup implements CommandLineRunner {
     @Override
     public void run(String... args) {
         initData();
+        searchCatalog();
+        placeOrder();
+    }
+
+    private void placeOrder() {
+        Book panTadeusz = catalog.findOneByTitle("Pan Tadeusz")
+                                 .orElseThrow(() -> new IllegalStateException("Cannot find a book"));
+        Book chlopi = catalog.findOneByTitle("Chłopi")
+                             .orElseThrow(() -> new IllegalStateException("Cannot find a book"));
+
+        // create recipient
+        Recipient recipient = Recipient
+            .builder()
+            .name("Jan Kowalski")
+            .phone("123-456-789")
+            .street("Armii Krajowej 31")
+            .city("Krakow")
+            .zipCode("30-150")
+            .email("jan@example.org")
+            .build();
+
+        PlaceOrderCommand command = PlaceOrderCommand
+            .builder()
+            .recipient(recipient)
+            .item(new OrderItem(panTadeusz, 16))
+            .item(new OrderItem(chlopi, 7))
+            .build();
+
+        PlaceOrderResponse response = placeOrder.placeOrder(command);
+        System.out.println("Created ORDER with id: " + response.getOrderId());
+
+        // list all orders
+        queryOrder.findAll()
+                  .forEach(order -> {
+                      System.out.println("GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS: " + order);
+                  });
+    }
+
+    private void searchCatalog() {
         findByTitle();
         findAndUpdate();
         findByTitle();
     }
 
     private void initData() {
-        catalog.addBook(new CreateBookCommand("Pan Tadeusz", "Adam Mickiewicz", 1834));
-        catalog.addBook(new CreateBookCommand("Ogniem i Mieczem", "Henryk Sienkiewicz", 1884));
-        catalog.addBook(new CreateBookCommand("Chłopi", "Władysław Reymont", 1904));
-        catalog.addBook(new CreateBookCommand("Pan Wołodyjowski", "Henryk Sienkiewicz", 1899));
+        catalog.addBook(new CreateBookCommand("Pan Tadeusz", "Adam Mickiewicz", 1834, new BigDecimal("19.90")));
+        catalog.addBook(new CreateBookCommand("Ogniem i Mieczem", "Henryk Sienkiewicz", 1884, new BigDecimal("29.90")));
+        catalog.addBook(new CreateBookCommand("Chłopi", "Władysław Reymont", 1904, new BigDecimal("11.90")));
+        catalog.addBook(new CreateBookCommand("Pan Wołodyjowski", "Henryk Sienkiewicz", 1899, new BigDecimal("14.90")));
     }
 
     private void findByTitle() {
