@@ -6,7 +6,7 @@ import java.util.Optional;
 public interface CatalogRepository {
     List<Book> findAll();
 
-    void save(Book book);
+    Book save(Book book);
 
     Optional<Book> findById(Long id);
 

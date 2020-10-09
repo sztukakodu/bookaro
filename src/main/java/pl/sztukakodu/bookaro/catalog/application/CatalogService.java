@@ -23,10 +23,15 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
+    public Optional<Book> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    @Override
     public List<Book> findByTitle(String title) {
         return repository.findAll()
                          .stream()
-                         .filter(book -> book.getTitle().startsWith(title))
+                         .filter(book -> book.getTitle().toLowerCase().startsWith(title.toLowerCase()))
                          .collect(Collectors.toList());
     }
 
@@ -39,6 +44,23 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
+    public List<Book> findByAuthor(String author) {
+        return repository.findAll()
+                         .stream()
+                         .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                         .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Book> findByTitleAndAuthor(String title, String author) {
+        return repository.findAll()
+                         .stream()
+                         .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                         .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
+                         .collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<Book> findOneByTitleAndAuthor(String title, String author) {
         return repository.findAll()
                          .stream()
@@ -48,9 +70,9 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
-    public void addBook(CreateBookCommand command) {
+    public Book addBook(CreateBookCommand command) {
         Book book = command.toBook();
-        repository.save(book);
+        return repository.save(book);
     }
 
     @Override
