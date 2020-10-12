@@ -18,9 +18,15 @@
 		<java.version>14</java.version>
 		<lombok.version>1.18.12</lombok.version>
 		<hibernate.validator.version>6.1.5.Final</hibernate.validator.version>
+		<commons.lang.version>3.11</commons.lang.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons.lang.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
