@@ -3,6 +3,7 @@ package pl.sztukakodu.bookaro.catalog.web;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,13 +59,13 @@ class CatalogController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateBook(@PathVariable Long id, @RequestBody RestBookCommand command) {
         UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
-        if(!response.isSuccess()) {
+        if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
     }
 
-    @PutMapping("/{id}/cover")
+    @PutMapping(value = "/{id}/cover", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void addBookCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
         catalog.updateBookCover(new UpdateBookCoverCommand(
