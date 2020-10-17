@@ -11,8 +11,10 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 
-public interface PlaceOrderUseCase {
+public interface MaipulateOrderUseCase {
     PlaceOrderResponse placeOrder(PlaceOrderCommand command);
+
+    void deleteOrderById(Long id);
 
     @Builder
     @Value

@@ -2,13 +2,13 @@ package pl.sztukakodu.bookaro.order.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.sztukakodu.bookaro.order.application.port.PlaceOrderUseCase;
+import pl.sztukakodu.bookaro.order.application.port.MaipulateOrderUseCase;
 import pl.sztukakodu.bookaro.order.domain.Order;
 import pl.sztukakodu.bookaro.order.domain.OrderRepository;
 
 @Service
 @RequiredArgsConstructor
-class PlaceOrderService implements PlaceOrderUseCase {
+class MaipulateOrderService implements MaipulateOrderUseCase {
     private final OrderRepository repository;
 
     @Override

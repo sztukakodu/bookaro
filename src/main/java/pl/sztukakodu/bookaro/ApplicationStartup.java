@@ -8,9 +8,9 @@ import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.CreateBookC
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookCommand;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
-import pl.sztukakodu.bookaro.order.application.port.PlaceOrderUseCase;
-import pl.sztukakodu.bookaro.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
-import pl.sztukakodu.bookaro.order.application.port.PlaceOrderUseCase.PlaceOrderResponse;
+import pl.sztukakodu.bookaro.order.application.port.MaipulateOrderUseCase;
+import pl.sztukakodu.bookaro.order.application.port.MaipulateOrderUseCase.PlaceOrderCommand;
+import pl.sztukakodu.bookaro.order.application.port.MaipulateOrderUseCase.PlaceOrderResponse;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
 import pl.sztukakodu.bookaro.order.domain.OrderItem;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
@@ -22,14 +22,14 @@ import java.util.List;
 class ApplicationStartup implements CommandLineRunner {
 
     private final CatalogUseCase catalog;
-    private final PlaceOrderUseCase placeOrder;
+    private final MaipulateOrderUseCase placeOrder;
     private final QueryOrderUseCase queryOrder;
     private final String title;
     private final Long limit;
 
     public ApplicationStartup(
         CatalogUseCase catalog,
-        PlaceOrderUseCase placeOrder,
+        MaipulateOrderUseCase placeOrder,
         QueryOrderUseCase queryOrder,
         @Value("${bookaro.catalog.query}") String title,
         @Value("${bookaro.catalog.limit}") Long limit
