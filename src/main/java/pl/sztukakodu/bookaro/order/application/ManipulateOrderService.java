@@ -24,6 +24,6 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
 
     @Override
     public void deleteOrderById(Long id) {
-        // TODO-Darek: to be implemented
+        repository.deleteById(id);
     }
 }

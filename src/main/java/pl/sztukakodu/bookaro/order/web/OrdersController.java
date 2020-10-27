@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
-import pl.sztukakodu.bookaro.order.domain.Order;
+import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase.RichOrder;
 import pl.sztukakodu.bookaro.order.domain.OrderItem;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
 import pl.sztukakodu.bookaro.web.CreatedURI;
@@ -26,12 +26,12 @@ class OrdersController {
     private final QueryOrderUseCase queryOrder;
 
     @GetMapping
-    public List<Order> getOrders() {
+    public List<RichOrder> getOrders() {
         return queryOrder.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id) {
         return queryOrder.findById(id)
                          .map(ResponseEntity::ok)
                          .orElse(ResponseEntity.notFound().build());
