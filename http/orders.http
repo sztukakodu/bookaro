@@ -1,0 +1,27 @@
+###
+POST http://localhost:8080/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "bookId": 0,
+      "quantity": 2
+    },
+    {
+      "bookId": 1,
+      "quantity": 1
+    }
+  ],
+  "recipient": {
+    "name": "John Doe",
+    "phone": "123-456-789",
+    "street": "Cwiartki 3/4",
+    "city": "Krakow",
+    "zipCode": "30-150",
+    "email": "johndoe@example.org"
+  }
+}
+
+###
+GET http://localhost:8080/orders/2
