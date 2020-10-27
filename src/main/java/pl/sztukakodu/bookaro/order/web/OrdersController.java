@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase.RichOrder;
 import pl.sztukakodu.bookaro.order.domain.OrderItem;
+import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
 import pl.sztukakodu.bookaro.web.CreatedURI;
 
@@ -55,8 +57,10 @@ class OrdersController {
     @PutMapping("/{id}/status")
     @ResponseStatus(ACCEPTED)
     public void updateOrderStatus(@PathVariable Long id, @RequestBody UpdateStatusCommand command) {
-        // TODO-Darek:
-        // manipulateOrder.updateOrderStatus();
+        OrderStatus orderStatus = OrderStatus
+            .parseString(command.status)
+            .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Unknown status: " + command.status));
+        manipulateOrder.updateOrderStatus(id, orderStatus);
     }
 
     @DeleteMapping("/{id}")

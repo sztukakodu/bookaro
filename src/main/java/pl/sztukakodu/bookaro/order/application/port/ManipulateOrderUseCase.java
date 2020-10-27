@@ -6,6 +6,7 @@ import lombok.Singular;
 import lombok.Value;
 import pl.sztukakodu.bookaro.commons.Either;
 import pl.sztukakodu.bookaro.order.domain.OrderItem;
+import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
 
 import java.util.List;
@@ -14,6 +15,8 @@ public interface ManipulateOrderUseCase {
     PlaceOrderResponse placeOrder(PlaceOrderCommand command);
 
     void deleteOrderById(Long id);
+
+    void updateOrderStatus(Long id, OrderStatus status);
 
     @Builder
     @Value
