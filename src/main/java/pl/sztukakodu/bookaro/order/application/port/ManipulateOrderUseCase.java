@@ -1,41 +1,40 @@
 package pl.sztukakodu.bookaro.order.application.port;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
+import pl.sztukakodu.bookaro.commons.Either;
 import pl.sztukakodu.bookaro.order.domain.OrderItem;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-
-public interface MaipulateOrderUseCase {
+public interface ManipulateOrderUseCase {
     PlaceOrderResponse placeOrder(PlaceOrderCommand command);
 
     void deleteOrderById(Long id);
 
     @Builder
     @Value
+    @AllArgsConstructor
     class PlaceOrderCommand {
         @Singular
         List<OrderItem> items;
         Recipient recipient;
     }
 
-    @Value
-    class PlaceOrderResponse {
-        boolean success;
-        Long orderId;
-        List<String> errors;
-
-        public static PlaceOrderResponse success(Long orderId) {
-            return new PlaceOrderResponse(true, orderId, emptyList());
+    class PlaceOrderResponse extends Either<String, Long> {
+        public PlaceOrderResponse(boolean success, String left, Long right) {
+            super(success, left, right);
         }
 
-        public static PlaceOrderResponse failure(String... errors) {
-            return new PlaceOrderResponse(false, null, Arrays.asList(errors));
+        public static PlaceOrderResponse success(Long orderId) {
+            return new PlaceOrderResponse(true, null, orderId);
+        }
+
+        public static PlaceOrderResponse failure(String error) {
+            return new PlaceOrderResponse(false, error, null);
         }
     }
 }
