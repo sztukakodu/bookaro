@@ -24,4 +24,4 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/orders/2
+GET http://localhost:8080/orders

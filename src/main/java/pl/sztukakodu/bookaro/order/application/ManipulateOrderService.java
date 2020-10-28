@@ -3,14 +3,14 @@ package pl.sztukakodu.bookaro.order.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
+import pl.sztukakodu.bookaro.order.db.OrderJpaRepository;
 import pl.sztukakodu.bookaro.order.domain.Order;
-import pl.sztukakodu.bookaro.order.domain.OrderRepository;
 import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 
 @Service
 @RequiredArgsConstructor
 class ManipulateOrderService implements ManipulateOrderUseCase {
-    private final OrderRepository repository;
+    private final OrderJpaRepository repository;
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {

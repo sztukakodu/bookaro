@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import pl.sztukakodu.bookaro.catalog.db.BookJpaRepository;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
+import pl.sztukakodu.bookaro.order.db.OrderJpaRepository;
 import pl.sztukakodu.bookaro.order.domain.Order;
 import pl.sztukakodu.bookaro.order.domain.OrderItem;
-import pl.sztukakodu.bookaro.order.domain.OrderRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 class QueryOrderService implements QueryOrderUseCase {
-    private final OrderRepository repository;
+    private final OrderJpaRepository repository;
     private final BookJpaRepository catalogRepository;
 
     @Override
