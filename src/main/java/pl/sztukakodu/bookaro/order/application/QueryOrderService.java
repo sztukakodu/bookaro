@@ -2,8 +2,8 @@ package pl.sztukakodu.bookaro.order.application;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.sztukakodu.bookaro.catalog.db.BookJpaRepository;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
-import pl.sztukakodu.bookaro.catalog.domain.CatalogRepository;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
 import pl.sztukakodu.bookaro.order.domain.Order;
 import pl.sztukakodu.bookaro.order.domain.OrderItem;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 class QueryOrderService implements QueryOrderUseCase {
     private final OrderRepository repository;
-    private final CatalogRepository catalogRepository;
+    private final BookJpaRepository catalogRepository;
 
     @Override
     public List<RichOrder> findAll() {
