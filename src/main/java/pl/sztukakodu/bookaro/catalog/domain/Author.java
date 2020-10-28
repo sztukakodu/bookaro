@@ -1,6 +1,6 @@
 package pl.sztukakodu.bookaro.catalog.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -22,7 +22,7 @@ public class Author {
     private String lastName;
 
     @ManyToMany(mappedBy = "authors", fetch = FetchType.EAGER)
-    @JsonBackReference
+    @JsonIgnoreProperties("authors")
     private Set<Book> books;
 
     public Author(String firstName, String lastName) {
