@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RequestMapping("/catalog")
 @RestController
@@ -104,8 +105,9 @@ class CatalogController {
         @NotBlank(message = "Please provide a title")
         private String title;
 
-        @NotBlank(message = "Please provide an author")
-        private String author;
+        // TODO-Darek: fix
+//        @NotBlank(message = "Please provide an author")
+//        private String author;
 
         @NotNull
         private Integer year;
@@ -115,11 +117,12 @@ class CatalogController {
         private BigDecimal price;
 
         CreateBookCommand toCreateCommand() {
-            return new CreateBookCommand(title, author, year, price);
+            return new CreateBookCommand(title, Set.of(), year, price);
         }
 
+        // TODO-Darek: fix
         UpdateBookCommand toUpdateCommand(Long id) {
-            return new UpdateBookCommand(id, title, author, year, price);
+            return new UpdateBookCommand(id, title, "xxx", year, price);
         }
     }
 }
