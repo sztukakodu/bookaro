@@ -56,6 +56,7 @@ class CatalogService implements CatalogUseCase {
     public List<Book> findByAuthor(String author) {
         return repository.findAll()
                          .stream()
+                         // TODO-Darek: fix
 //                         .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
                          .collect(Collectors.toList());
     }
@@ -64,6 +65,7 @@ class CatalogService implements CatalogUseCase {
     public List<Book> findByTitleAndAuthor(String title, String author) {
         return repository.findAll()
                          .stream()
+                         // TODO-Darek: fix
 //                         .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
                          .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
                          .collect(Collectors.toList());
@@ -86,13 +88,18 @@ class CatalogService implements CatalogUseCase {
 
     private Book toBook(CreateBookCommand command) {
         Book book = new Book(command.getTitle(), command.getYear(), command.getPrice());
-        Set<Author> authors = command.getAuthors().stream()
-                                     .map(authorRepository::findById)
-                                     .filter(Optional::isPresent)
-                                     .map(Optional::get)
-                                     .collect(Collectors.toSet());
+        Set<Author> authors = fetchAuthorsByIds(command.getAuthors());
         book.setAuthors(authors);
         return book;
+    }
+
+    private Set<Author> fetchAuthorsByIds(Set<Long> authors) {
+        return authors.stream()
+                      .map(id -> authorRepository
+                          .findById(id)
+                          .orElseThrow(() -> new IllegalArgumentException("No author with id: " + id))
+                      )
+                      .collect(Collectors.toSet());
     }
 
     @Override
@@ -100,11 +107,28 @@ class CatalogService implements CatalogUseCase {
         return repository
             .findById(command.getId())
             .map(book -> {
-                Book updatedBook = command.updateFields(book);
+                Book updatedBook = toBook(command, book);
                 repository.save(updatedBook);
                 return UpdateBookResponse.SUCCESS;
             })
             .orElseGet(() -> new UpdateBookResponse(false, Collections.singletonList("Book not found with id: " + command.getId())));
+    }
+
+    private Book toBook(UpdateBookCommand command, Book book) {
+        if (command.getTitle() != null) {
+            book.setTitle(command.getTitle());
+        }
+        if (command.getAuthors() != null && !command.getAuthors().isEmpty()) {
+            Set<Author> authors = fetchAuthorsByIds(command.getAuthors());
+            book.setAuthors(authors);
+        }
+        if (command.getYear() != null) {
+            book.setYear(command.getYear());
+        }
+        if (command.getPrice() != null) {
+            book.setPrice(command.getPrice());
+        }
+        return book;
     }
 
     @Override
