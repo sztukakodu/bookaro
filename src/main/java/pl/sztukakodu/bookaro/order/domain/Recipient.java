@@ -5,10 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Embeddable;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Embeddable
 public class Recipient {
     private String name;
     private String phone;
