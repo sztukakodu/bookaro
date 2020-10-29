@@ -62,22 +62,6 @@ public interface CatalogUseCase {
         Set<Long> authors;
         Integer year;
         BigDecimal price;
-
-        public Book updateFields(Book book) {
-            if (title != null) {
-                book.setTitle(title);
-            }
-//            if (author != null) {
-//                book.setAuthor(author);
-//            }
-            if (year != null) {
-                book.setYear(year);
-            }
-            if (price != null) {
-                book.setPrice(price);
-            }
-            return book;
-        }
     }
 
     @Value
