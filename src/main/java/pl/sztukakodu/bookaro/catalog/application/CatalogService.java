@@ -3,7 +3,9 @@ package pl.sztukakodu.bookaro.catalog.application;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase;
+import pl.sztukakodu.bookaro.catalog.db.AuthorJpaRepository;
 import pl.sztukakodu.bookaro.catalog.db.BookJpaRepository;
+import pl.sztukakodu.bookaro.catalog.domain.Author;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.uploads.application.ports.UploadUseCase;
 import pl.sztukakodu.bookaro.uploads.domain.Upload;
@@ -11,6 +13,7 @@ import pl.sztukakodu.bookaro.uploads.domain.Upload;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static pl.sztukakodu.bookaro.uploads.application.ports.UploadUseCase.SaveUploadCommand;
@@ -20,6 +23,7 @@ import static pl.sztukakodu.bookaro.uploads.application.ports.UploadUseCase.Save
 class CatalogService implements CatalogUseCase {
 
     private final BookJpaRepository repository;
+    private final AuthorJpaRepository authorRepository;
     private final UploadUseCase upload;
 
     @Override
@@ -76,8 +80,20 @@ class CatalogService implements CatalogUseCase {
 
     @Override
     public Book addBook(CreateBookCommand command) {
-        Book book = command.toBook();
+        Book book = toBook(command);
         return repository.save(book);
+    }
+
+    private Book toBook(CreateBookCommand command) {
+        Book book = new Book(command.getTitle(), command.getYear(), command.getPrice());
+        Set<Author> authors = command.getAuthors().stream()
+                                     .map(authorId -> authorRepository
+                                         .findById(authorId)
+                                         .orElseThrow(() -> new IllegalArgumentException("Unable to find author with id: " + authorId))
+                                     )
+                                     .collect(Collectors.toSet());
+        book.setAuthors(authors);
+        return book;
     }
 
     @Override

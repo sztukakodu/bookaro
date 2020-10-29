@@ -7,12 +7,11 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "authors")
 @RequiredArgsConstructor
 @Entity
 public class Book {
