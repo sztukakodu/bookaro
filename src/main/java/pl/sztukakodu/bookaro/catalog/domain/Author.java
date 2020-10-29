@@ -1,5 +1,6 @@
 package pl.sztukakodu.bookaro.catalog.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -25,6 +26,7 @@ public class Author {
     private String lastName;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "authors")
+    @JsonIgnoreProperties("authors")
     private Set<Book> books;
 
     @CreatedDate
