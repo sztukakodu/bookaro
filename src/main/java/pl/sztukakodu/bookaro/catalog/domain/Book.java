@@ -5,11 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -21,14 +20,16 @@ public class Book {
     @GeneratedValue
     private Long id;
     private String title;
-    private String author;
     private Integer year;
     private BigDecimal price;
     private Long coverId;
 
-    public Book(String title, String author, Integer year, BigDecimal price) {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable
+    private Set<Author> authors;
+
+    public Book(String title, Integer year, BigDecimal price) {
         this.title = title;
-        this.author = author;
         this.year = year;
         this.price = price;
     }
