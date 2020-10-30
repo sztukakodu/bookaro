@@ -2,6 +2,7 @@ package pl.sztukakodu.bookaro.catalog.application;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase;
 import pl.sztukakodu.bookaro.catalog.db.AuthorJpaRepository;
 import pl.sztukakodu.bookaro.catalog.db.BookJpaRepository;
@@ -10,6 +11,7 @@ import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.uploads.application.ports.UploadUseCase;
 import pl.sztukakodu.bookaro.uploads.domain.Upload;
 
+import javax.persistence.EntityManager;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,7 @@ class CatalogService implements CatalogUseCase {
     private final BookJpaRepository repository;
     private final AuthorJpaRepository authorRepository;
     private final UploadUseCase upload;
+    private final EntityManager em;
 
     @Override
     public List<Book> findAll() {
@@ -64,6 +67,7 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
+    @Transactional
     public Book addBook(CreateBookCommand command) {
         Book book = toBook(command);
         return repository.save(book);

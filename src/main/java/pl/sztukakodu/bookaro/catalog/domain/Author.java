@@ -25,7 +25,7 @@ public class Author extends BaseEntity {
 
     private String lastName;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "authors", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "authors", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnoreProperties("authors")
     private Set<Book> books = new HashSet<>();
 
