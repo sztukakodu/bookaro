@@ -96,12 +96,12 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
+    @Transactional
     public UpdateBookResponse updateBook(UpdateBookCommand command) {
         return repository
             .findById(command.getId())
             .map(book -> {
-                Book updatedBook = updateFields(command, book);
-                repository.save(updatedBook);
+                updateFields(command, book);
                 return UpdateBookResponse.SUCCESS;
             })
             .orElseGet(() -> new UpdateBookResponse(false, Collections.singletonList("Book not found with id: " + command.getId())));
