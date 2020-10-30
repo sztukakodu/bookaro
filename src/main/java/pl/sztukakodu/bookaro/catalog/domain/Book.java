@@ -5,8 +5,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import pl.sztukakodu.bookaro.jpa.BaseEntity;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,10 +20,7 @@ import java.util.Set;
 @ToString(exclude = "authors")
 @RequiredArgsConstructor
 @Entity
-public class Book {
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Book extends BaseEntity {
     private String title;
     private Integer year;
     private BigDecimal price;
