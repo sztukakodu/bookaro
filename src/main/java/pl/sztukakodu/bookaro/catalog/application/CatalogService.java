@@ -27,11 +27,10 @@ class CatalogService implements CatalogUseCase {
     private final BookJpaRepository repository;
     private final AuthorJpaRepository authorRepository;
     private final UploadUseCase upload;
-    private final EntityManager em;
 
     @Override
     public List<Book> findAll() {
-        return repository.findAll();
+        return repository.findAllEager();
     }
 
     @Override
