@@ -9,14 +9,11 @@ import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase.RichOrder;
-import pl.sztukakodu.bookaro.order.domain.OrderItem;
 import pl.sztukakodu.bookaro.order.domain.OrderStatus;
-import pl.sztukakodu.bookaro.order.domain.Recipient;
 import pl.sztukakodu.bookaro.web.CreatedURI;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -41,9 +38,9 @@ class OrdersController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public ResponseEntity<Object> createOrder(@RequestBody CreateOrderCommand command) {
+    public ResponseEntity<Object> createOrder(@RequestBody PlaceOrderCommand command) {
         return manipulateOrder
-            .placeOrder(command.toPlaceOrderCommand())
+            .placeOrder(command)
             .handle(
                 orderId -> ResponseEntity.created(orderUri(orderId)).build(),
                 error -> ResponseEntity.badRequest().body(error)
@@ -67,40 +64,6 @@ class OrdersController {
     @ResponseStatus(NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
         manipulateOrder.deleteOrderById(id);
-    }
-
-    @Data
-    static class CreateOrderCommand {
-        List<OrderItemCommand> items;
-        RecipientCommand recipient;
-
-        PlaceOrderCommand toPlaceOrderCommand() {
-            List<OrderItem> orderItems = items
-                .stream()
-                .map(item -> new OrderItem(item.bookId, item.quantity))
-                .collect(Collectors.toList());
-            return new PlaceOrderCommand(orderItems, recipient.toRecipient());
-        }
-    }
-
-    @Data
-    static class OrderItemCommand {
-        Long bookId;
-        int quantity;
-    }
-
-    @Data
-    static class RecipientCommand {
-        String name;
-        String phone;
-        String street;
-        String city;
-        String zipCode;
-        String email;
-
-        Recipient toRecipient() {
-            return new Recipient(name, phone, street, city, zipCode, email);
-        }
     }
 
     @Data

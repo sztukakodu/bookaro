@@ -13,11 +13,11 @@ Content-Type: application/json
   "items": [
     {
       "bookId": 3,
-      "quantity": 2
+      "quantity": 8
     },
     {
       "bookId": 4,
-      "quantity": 1
+      "quantity": 13
     }
   ],
   "recipient": {
@@ -31,7 +31,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/orders/9
+GET http://localhost:8080/orders
 
 
 ###
