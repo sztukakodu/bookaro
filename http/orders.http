@@ -13,11 +13,11 @@ Content-Type: application/json
   "items": [
     {
       "bookId": 3,
-      "quantity": 8
+      "quantity": 1
     },
     {
       "bookId": 4,
-      "quantity": 13
+      "quantity": 2
     }
   ],
   "recipient": {
