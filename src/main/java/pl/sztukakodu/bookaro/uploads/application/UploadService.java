@@ -1,6 +1,7 @@
 package pl.sztukakodu.bookaro.uploads.application;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.sztukakodu.bookaro.uploads.application.ports.UploadUseCase;
 import pl.sztukakodu.bookaro.uploads.db.UploadJpaRepository;
@@ -8,6 +9,7 @@ import pl.sztukakodu.bookaro.uploads.domain.Upload;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 class UploadService implements UploadUseCase {
@@ -21,7 +23,7 @@ class UploadService implements UploadUseCase {
             command.getFile()
         );
         repository.save(upload);
-        System.out.println("Upload saved: " + upload.getFilename() + " with id: " + upload.getId());
+        log.info("Upload saved: " + upload.getFilename() + " with id: " + upload.getId());
         return upload;
     }
 
