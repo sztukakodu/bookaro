@@ -21,9 +21,8 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString(exclude = "books")
 public class Author extends BaseEntity {
-    private String firstName;
 
-    private String lastName;
+    private String name;
 
     @ManyToMany(mappedBy = "authors", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnoreProperties("authors")
@@ -32,9 +31,8 @@ public class Author extends BaseEntity {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public Author(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Author(String name) {
+        this.name = name;
     }
 
     public void addBook(Book book) {

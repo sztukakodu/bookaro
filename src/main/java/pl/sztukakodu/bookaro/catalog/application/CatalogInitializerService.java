@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,9 @@ import pl.sztukakodu.bookaro.catalog.application.port.CatalogInitializerUseCase;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.CreateBookCommand;
 import pl.sztukakodu.bookaro.catalog.db.AuthorJpaRepository;
+import pl.sztukakodu.bookaro.catalog.domain.Author;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
+import pl.sztukakodu.bookaro.jpa.BaseEntity;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
@@ -23,7 +26,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -56,16 +61,28 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
     }
 
     private void initBook(CsvBook csvBook) {
-        // parse authors
+        Set<Long> authors = Arrays
+            .stream(csvBook.authors.split(","))
+            .filter(StringUtils::isNotBlank)
+            .map(String::trim)
+            .map(this::getOrCreateAuthor)
+            .map(BaseEntity::getId)
+            .collect(Collectors.toSet());
         CreateBookCommand command = new CreateBookCommand(
             csvBook.title,
-            Set.of(),
+            authors,
             csvBook.year,
             csvBook.amount,
             50L
         );
         catalog.addBook(command);
         // upload thumbnail
+    }
+
+    private Author getOrCreateAuthor(String name) {
+        return authorJpaRepository
+            .findByNameIgnoreCase(name)
+            .orElseGet(() -> authorJpaRepository.save(new Author(name)));
     }
 
     @Data
