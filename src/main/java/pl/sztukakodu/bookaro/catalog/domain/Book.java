@@ -21,7 +21,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Entity
 public class Book extends BaseEntity {
-    private String title;
+    private String title;       // TODO-Darek: those are not unique, please fix this!
     private Integer year;
     private BigDecimal price;
     private Long coverId;
