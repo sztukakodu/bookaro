@@ -8,7 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
-import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase.RichOrder;
+import pl.sztukakodu.bookaro.order.application.RichOrder;
 import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 import pl.sztukakodu.bookaro.web.CreatedURI;
 
