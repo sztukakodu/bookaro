@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sztukakodu.bookaro.catalog.db.BookJpaRepository;
-import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
+import pl.sztukakodu.bookaro.order.application.port.RichOrder;
 import pl.sztukakodu.bookaro.order.db.OrderJpaRepository;
 import pl.sztukakodu.bookaro.order.domain.Order;
-import pl.sztukakodu.bookaro.order.domain.OrderItem;
 
 import java.util.List;
 import java.util.Optional;
