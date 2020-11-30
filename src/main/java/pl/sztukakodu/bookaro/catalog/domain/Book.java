@@ -7,10 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import pl.sztukakodu.bookaro.jpa.BaseEntity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +18,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Entity
 public class Book extends BaseEntity {
+    @Column(unique = true)
     private String title;
     private Integer year;
     private BigDecimal price;
