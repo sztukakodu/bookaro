@@ -23,6 +23,9 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
+        if(command.getItems().isEmpty()) {
+            return PlaceOrderResponse.failure("Empty order. Cannot proceed");
+        }
         Set<OrderItem> items = command
             .getItems()
             .stream()
@@ -35,7 +38,7 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
             .build();
         Order save = repository.save(order);
         bookJpaRepository.saveAll(reduceBooks(items));
-        return PlaceOrderResponse.success(save.getId());
+        return PlaceOrderResponse.success(save);
     }
 
     private Recipient getOrCreateRecipient(Recipient recipient) {

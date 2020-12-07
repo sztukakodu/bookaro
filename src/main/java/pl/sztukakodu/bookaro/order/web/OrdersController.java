@@ -42,7 +42,7 @@ class OrdersController {
         return manipulateOrder
             .placeOrder(command)
             .handle(
-                orderId -> ResponseEntity.created(orderUri(orderId)).build(),
+                order -> ResponseEntity.created(orderUri(order.getId())).build(),
                 error -> ResponseEntity.badRequest().body(error)
             );
     }
