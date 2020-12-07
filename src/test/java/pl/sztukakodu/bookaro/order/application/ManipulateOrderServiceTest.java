@@ -13,6 +13,7 @@ import pl.sztukakodu.bookaro.order.domain.Recipient;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
@@ -42,6 +43,25 @@ class ManipulateOrderServiceTest {
 
         // then
         assertTrue(response.isSuccess());
+    }
+
+    @Test
+    public void userCantOrderMoreBooksThanAvailable() {
+        // given
+        Book effectiveJava = givenEffectiveJava(5L);
+        PlaceOrderCommand command = PlaceOrderCommand
+            .builder()
+            .recipient(recipient())
+            .item(new OrderItemCommand(effectiveJava.getId(), 10))
+            .build();
+
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            service.placeOrder(command);
+        });
+
+        // then
+        assertTrue(exception.getMessage().contains("Too many copies of book " + effectiveJava.getId() + " requested"));
     }
 
     private Book givenJavaConcurrency(long available) {
