@@ -112,7 +112,43 @@ class OrderServiceTest {
         // then
         assertEquals(35L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
+    }
 
+    @Test
+    // TODO-Darek: poprawic w module security
+    public void adminCannotRevokeOtherUsersOrder() {
+        // given
+        Book effectiveJava = givenEffectiveJava(50L);
+        String marek = "marek@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, marek);
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+
+        // when
+        String admin = "admin@example.org";
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, admin);
+        service.updateOrderStatus(command);
+
+        // then
+        assertEquals(50L, availableCopiesOf(effectiveJava));
+        assertEquals(OrderStatus.CANCELLED, queryOrderService.findById(orderId).get().getStatus());
+    }
+
+    @Test
+    public void adminCanMarkOrderAsPaid() {
+        // given
+        Book effectiveJava = givenEffectiveJava(50L);
+        String recipient = "marek@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, recipient);
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+
+        // when
+        String admin = "admin@example.org";
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, admin);
+        service.updateOrderStatus(command);
+
+        // then
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        assertEquals(OrderStatus.PAID, queryOrderService.findById(orderId).get().getStatus());
     }
 
     @Test
