@@ -35,6 +35,7 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
             .builder()
             .recipient(getOrCreateRecipient(command.getRecipient()))
             .items(items)
+            .delivery(command.getDelivery())
             .build();
         Order savedOrder = repository.save(order);
         bookJpaRepository.saveAll(reduceBooks(items));

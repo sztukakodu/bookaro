@@ -31,6 +31,10 @@ public class Order extends BaseEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Recipient recipient;
 
+    @Enumerated
+    @Builder.Default
+    private Delivery delivery = Delivery.COURIER;
+
     @CreatedDate
     private LocalDateTime createdAt;
 

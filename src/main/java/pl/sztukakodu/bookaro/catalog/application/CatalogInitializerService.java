@@ -23,7 +23,9 @@ import pl.sztukakodu.bookaro.catalog.domain.Author;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.jpa.BaseEntity;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
+import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
+import pl.sztukakodu.bookaro.order.domain.Delivery;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
 
 import java.io.BufferedReader;
@@ -86,7 +88,9 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
 
     private UpdateBookCoverCommand updateBookCoverCommand(Long bookId, String thumbnailUrl) {
         ResponseEntity<byte[]> response = restTemplate.exchange(thumbnailUrl, HttpMethod.GET, null, byte[].class);
-        String contentType = response.getHeaders().getContentType().toString();
+        String contentType = response.getHeaders()
+                                     .getContentType()
+                                     .toString();
         return new UpdateBookCoverCommand(bookId, response.getBody(), contentType, "cover");
     }
 
@@ -129,11 +133,12 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
             .email("jan@example.org")
             .build();
 
-        ManipulateOrderUseCase.PlaceOrderCommand command = ManipulateOrderUseCase.PlaceOrderCommand
+        PlaceOrderCommand command = PlaceOrderCommand
             .builder()
             .recipient(recipient)
             .item(new ManipulateOrderUseCase.OrderItemCommand(effectiveJava.getId(), 16))
             .item(new ManipulateOrderUseCase.OrderItemCommand(puzzlers.getId(), 7))
+            .delivery(Delivery.COURIER)
             .build();
 
         ManipulateOrderUseCase.PlaceOrderResponse response = placeOrder.placeOrder(command);
@@ -145,6 +150,6 @@ class CatalogInitializerService implements CatalogInitializerUseCase {
 
         // list all orders
         queryOrder.findAll()
-                  .forEach(order -> log.info("GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS: " + order));
+                  .forEach(order -> log.info("GOT ORDER WITH TOTAL PRICE: " + order.getFinalPrice() + " DETAILS: " + order));
     }
 }

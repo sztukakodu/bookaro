@@ -1,13 +1,9 @@
-package pl.sztukakodu.bookaro.order.application;
+package pl.sztukakodu.bookaro.order.domain;
 
 import org.junit.jupiter.api.Test;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
-import pl.sztukakodu.bookaro.order.domain.OrderItem;
-import pl.sztukakodu.bookaro.order.domain.OrderStatus;
-import pl.sztukakodu.bookaro.order.domain.Recipient;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -15,21 +11,19 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class RichOrderTest {
+class OrderCostTest {
+
 
     @Test
     public void calculatesTotalPriceOfEmptyOrder() {
         // given
-        RichOrder order = new RichOrder(
-            1L,
-            OrderStatus.NEW,
+        OrderCost order = new OrderCost(
             Collections.emptySet(),
-            Recipient.builder().build(),
-            LocalDateTime.now()
+            Delivery.COURIER
         );
 
         // when
-        BigDecimal price = order.totalPrice();
+        BigDecimal price = order.finalPrice();
 
         // then
         assertEquals(BigDecimal.ZERO, price);
@@ -48,19 +42,16 @@ class RichOrderTest {
                 new OrderItem(book2, 5)
             )
         );
-        RichOrder order = new RichOrder(
-            1L,
-            OrderStatus.NEW,
+        OrderCost order = new OrderCost(
             items,
-            Recipient.builder().build(),
-            LocalDateTime.now()
+            Delivery.COURIER
         );
 
         // when
-        BigDecimal price = order.totalPrice();
+        BigDecimal price = order.finalPrice();
 
         // then
-        assertEquals(new BigDecimal("194.95"), price);
+        assertEquals(new BigDecimal("188.70"), price);
     }
 
 }
