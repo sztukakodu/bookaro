@@ -6,7 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
 import pl.sztukakodu.bookaro.order.db.OrderJpaRepository;
 import pl.sztukakodu.bookaro.order.domain.Order;
-import pl.sztukakodu.bookaro.order.domain.OrderCost;
+import pl.sztukakodu.bookaro.order.price.OrderPrice;
+import pl.sztukakodu.bookaro.order.price.PriceService;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 class QueryOrderService implements QueryOrderUseCase {
     private final OrderJpaRepository repository;
+    private final PriceService priceService;
 
     @Override
     @Transactional
@@ -32,7 +34,7 @@ class QueryOrderService implements QueryOrderUseCase {
     }
 
     private RichOrder toRichOrder(Order order) {
-        OrderCost orderCost = new OrderCost(order.getItems(), order.getDelivery());
+        OrderPrice orderPrice = priceService.calculatePrice(order);
         return RichOrder
             .builder()
             .id(order.getId())
@@ -41,10 +43,8 @@ class QueryOrderService implements QueryOrderUseCase {
             .recipient(order.getRecipient())
             .createdAt(order.getCreatedAt())
             .delivery(order.getDelivery())
-            .itemsPrice(orderCost.itemsPrice())
-            .deliveryPrice(orderCost.deliveryPrice())
-            .discounts(orderCost.discounts())
-            .finalPrice(orderCost.finalPrice())
+            .orderPrice(orderPrice)
+            .finalPrice(orderPrice.getFinalPrice())
             .build();
     }
 }

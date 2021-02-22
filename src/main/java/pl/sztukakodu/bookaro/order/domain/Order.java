@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pl.sztukakodu.bookaro.jpa.BaseEntity;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.NEW;
 
+    @Singular
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     private Set<OrderItem> items;
@@ -45,5 +47,19 @@ public class Order extends BaseEntity {
         UpdateStatusResult result = this.status.updateStatus(newStatus);
         this.status = result.getNewStatus();
         return result;
+    }
+
+    public BigDecimal getItemsPrice() {
+        return items
+            .stream()
+            .map(item -> item.getBook().getPrice().multiply(new BigDecimal(item.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getDeliveryPrice() {
+        if (items.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        return delivery.getPrice();
     }
 }
