@@ -1,5 +1,6 @@
 package pl.sztukakodu.bookaro.order.application;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -65,11 +66,31 @@ class OrderServiceTest {
         assertEquals(35L, availableCopiesOf(effectiveJava));
 
         // when
-        service.updateOrderStatus(orderId, OrderStatus.CANCELED);
+        service.updateOrderStatus(orderId, OrderStatus.CANCELLED);
 
         // then
         assertEquals(50L, availableCopiesOf(effectiveJava));
-        assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
+        assertEquals(OrderStatus.CANCELLED, queryOrderService.findById(orderId).get().getStatus());
+    }
+
+    @Disabled("homework")
+    public void userCannotRevokePaidOrder() {
+        // user nie moze wycofac juz oplaconego zamowienia
+    }
+
+    @Disabled("homework")
+    public void userCannotRevokeShippedOrder() {
+        // user nie moze wycofac juz wyslanego zamowienia
+    }
+
+    @Disabled("homework")
+    public void userCannotOrderNoExistingBooks() {
+        // user nie moze zamowic nieistniejacych ksiazek
+    }
+
+    @Disabled("homework")
+    public void userCannotOrderNegativeNumberOfBooks() {
+        // user nie moze zamowic ujemnej liczby ksiazek
     }
 
     private Long placedOrder(Long bookId, int copies) {

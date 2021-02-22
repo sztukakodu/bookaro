@@ -11,7 +11,7 @@ public enum OrderStatus {
         public UpdateStatusResult updateStatus(OrderStatus status) {
             return switch (status) {
                 case PAID -> UpdateStatusResult.ok(PAID);
-                case CANCELED -> UpdateStatusResult.revoked(CANCELED);
+                case CANCELLED -> UpdateStatusResult.revoked(CANCELLED);
                 case ABANDONED -> UpdateStatusResult.revoked(ABANDONED);
                 default -> super.updateStatus(status);
             };
@@ -26,7 +26,7 @@ public enum OrderStatus {
             return super.updateStatus(status);
         }
     },
-    CANCELED,
+    CANCELLED,
     ABANDONED,
     SHIPPED;
 
