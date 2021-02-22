@@ -11,6 +11,8 @@ import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.OrderItemCommand;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
+import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
+import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
 
 import java.math.BigDecimal;
@@ -27,6 +29,9 @@ class ManipulateOrderServiceTest {
 
     @Autowired
     ManipulateOrderService service;
+
+    @Autowired
+    QueryOrderUseCase queryOrderService;
 
     @Autowired
     CatalogUseCase catalogUseCase;
@@ -48,8 +53,42 @@ class ManipulateOrderServiceTest {
 
         // then
         assertTrue(response.isSuccess());
-        assertEquals(35L, catalogUseCase.findById(effectiveJava.getId()).get().getAvailable());
-        assertEquals(40L, catalogUseCase.findById(jcip.getId()).get().getAvailable());
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        assertEquals(40L, availableCopiesOf(jcip));
+    }
+
+    @Test
+    public void userCanRevokeOrder() {
+        // given
+        Book effectiveJava = givenEffectiveJava(50L);
+        Long orderId = givenPlacedOrder(effectiveJava.getId(), 10);
+        assertEquals(40L, availableCopiesOf(effectiveJava));
+
+        // when
+        service.updateOrderStatus(orderId, OrderStatus.CANCELED);
+
+        // then
+        assertEquals(50L, availableCopiesOf(effectiveJava));
+        assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
+    }
+
+    @Test
+    public void userCannotRevokePaidOrder() {
+        // given
+        // placedOrder
+        // assert book available
+
+        // when
+        // revoke
+
+        // then
+        // revoke succeed
+        // list of books changed
+    }
+
+    @Test
+    public void userCannotRevokeShippedOrder() {
+
     }
 
     @Test
@@ -68,7 +107,19 @@ class ManipulateOrderServiceTest {
         });
 
         // then
-        assertTrue(exception.getMessage().contains("Too many copies of book " + effectiveJava.getId() + " requested"));
+        assertTrue(exception.getMessage()
+                            .contains("Too many copies of book " + effectiveJava.getId() + " requested"));
+    }
+
+    private Long givenPlacedOrder(Long bookId, int orderedCopies) {
+        PlaceOrderCommand command = PlaceOrderCommand
+            .builder()
+            .recipient(recipient())
+            .item(new OrderItemCommand(bookId, orderedCopies))
+            .build();
+
+        return service.placeOrder(command)
+                      .getRight();
     }
 
     private Book givenJavaConcurrency(long available) {
@@ -80,7 +131,15 @@ class ManipulateOrderServiceTest {
     }
 
     private Recipient recipient() {
-        return Recipient.builder().email("john@example.org").build();
+        return Recipient.builder()
+                        .email("john@example.org")
+                        .build();
+    }
+
+    private Long availableCopiesOf(Book effectiveJava) {
+        return catalogUseCase.findById(effectiveJava.getId())
+                             .get()
+                             .getAvailable();
     }
 
 }
