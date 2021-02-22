@@ -8,7 +8,10 @@ import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
 import pl.sztukakodu.bookaro.order.db.OrderJpaRepository;
 import pl.sztukakodu.bookaro.order.db.RecipientJpaRepository;
-import pl.sztukakodu.bookaro.order.domain.*;
+import pl.sztukakodu.bookaro.order.domain.Order;
+import pl.sztukakodu.bookaro.order.domain.OrderItem;
+import pl.sztukakodu.bookaro.order.domain.Recipient;
+import pl.sztukakodu.bookaro.order.domain.UpdateStatusResult;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,15 +73,27 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     @Override
-    public void updateOrderStatus(Long id, OrderStatus status) {
-        repository.findById(id)
-                  .ifPresent(order -> {
-                      UpdateStatusResult result = order.updateStatus(status);
-                      if(result.isRevoked()) {
-                          bookJpaRepository.saveAll(revokeBooks(order.getItems()));
-                      }
-                      repository.save(order);
-                  });
+    public UpdateOrderStatusResponse updateOrderStatus(UpdateStatusCommand command) {
+        return repository
+            .findById(command.getOrderId())
+            .map(order -> {
+                if (!hasAccess(order.getRecipient(), command.getPrincipal())) {
+                    return UpdateOrderStatusResponse.failure("Unauthorized access");
+                }
+                UpdateStatusResult result = order.updateStatus(command.getStatus());
+                if (result.isRevoked()) {
+                    bookJpaRepository.saveAll(revokeBooks(order.getItems()));
+                }
+                repository.save(order);
+                return UpdateOrderStatusResponse.success(order.getStatus());
+            })
+            .orElse(UpdateOrderStatusResponse.failure("Order not found"));
+    }
+
+    private boolean hasAccess(Recipient recipient, String principal) {
+        String recipientEmail = recipient.getEmail();
+        return recipientEmail.equalsIgnoreCase("admin@example.org") ||
+            recipientEmail.equalsIgnoreCase(principal);
     }
 
     private Set<Book> revokeBooks(Set<OrderItem> items) {

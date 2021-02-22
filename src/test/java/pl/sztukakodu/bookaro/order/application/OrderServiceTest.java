@@ -9,9 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase;
 import pl.sztukakodu.bookaro.catalog.db.BookJpaRepository;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
-import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.OrderItemCommand;
-import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
-import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
+import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.*;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
 import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
@@ -66,11 +64,17 @@ class OrderServiceTest {
         assertEquals(35L, availableCopiesOf(effectiveJava));
 
         // when
-        service.updateOrderStatus(orderId, OrderStatus.CANCELLED);
+        updateOrderStatus(orderId, OrderStatus.CANCELLED);
 
         // then
         assertEquals(50L, availableCopiesOf(effectiveJava));
-        assertEquals(OrderStatus.CANCELLED, queryOrderService.findById(orderId).get().getStatus());
+        assertEquals(OrderStatus.CANCELLED, queryOrderService.findById(orderId)
+                                                             .get()
+                                                             .getStatus());
+    }
+
+    private UpdateOrderStatusResponse updateOrderStatus(Long orderId, OrderStatus status) {
+        return service.updateOrderStatus(new UpdateStatusCommand(orderId, status, "admin@example.org"));
     }
 
     @Disabled("homework")
@@ -93,13 +97,43 @@ class OrderServiceTest {
         // user nie moze zamowic ujemnej liczby ksiazek
     }
 
-    private Long placedOrder(Long bookId, int copies) {
+    @Test
+    @Disabled("requires security module")
+    public void userCannotRevokeOtherUserOrder() {
+        // given
+        Book effectiveJava = givenEffectiveJava(50L);
+        String recipient = "john@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, recipient);
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+
+        // when
+        UpdateStatusCommand command = UpdateStatusCommand
+            .builder()
+            .orderId(orderId)
+            .status(OrderStatus.CANCELLED)
+            .principal("adam@example.org")
+            .build();
+        UpdateOrderStatusResponse response = service.updateOrderStatus(command);
+
+        // then
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        assertFalse(response.isSuccess());
+        assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
+
+    }
+
+    private Long placedOrder(Long bookId, int copies, String recipient) {
         PlaceOrderCommand command = PlaceOrderCommand
             .builder()
-            .recipient(recipient())
+            .recipient(recipient(recipient))
             .item(new OrderItemCommand(bookId, copies))
             .build();
-        return service.placeOrder(command).getRight();
+        return service.placeOrder(command)
+                      .getRight();
+    }
+
+    private Long placedOrder(Long bookId, int copies) {
+        return placedOrder(bookId, copies, "john@example.org");
     }
 
     @Test
@@ -118,7 +152,8 @@ class OrderServiceTest {
         });
 
         // then
-        assertTrue(exception.getMessage().contains("Too many copies of book " + effectiveJava.getId() + " requested"));
+        assertTrue(exception.getMessage()
+                            .contains("Too many copies of book " + effectiveJava.getId() + " requested"));
     }
 
     private Book givenJavaConcurrency(long available) {
@@ -130,7 +165,13 @@ class OrderServiceTest {
     }
 
     private Recipient recipient() {
-        return Recipient.builder().email("john@example.org").build();
+        return recipient("john@example.org");
+    }
+
+    private Recipient recipient(String email) {
+        return Recipient.builder()
+                        .email(email)
+                        .build();
     }
 
     private Long availableCopiesOf(Book effectiveJava) {

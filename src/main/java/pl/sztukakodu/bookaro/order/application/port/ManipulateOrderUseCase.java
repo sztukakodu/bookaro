@@ -13,7 +13,7 @@ public interface ManipulateOrderUseCase {
 
     void deleteOrderById(Long id);
 
-    void updateOrderStatus(Long id, OrderStatus status);
+    UpdateOrderStatusResponse updateOrderStatus(UpdateStatusCommand command);
 
     @Builder
     @Value
@@ -22,6 +22,15 @@ public interface ManipulateOrderUseCase {
         @Singular
         List<OrderItemCommand> items;
         Recipient recipient;
+    }
+
+    @Value
+    @Builder
+    @AllArgsConstructor
+    class UpdateStatusCommand {
+        Long orderId;
+        OrderStatus status;
+        String principal;
     }
 
     @Value
@@ -41,6 +50,21 @@ public interface ManipulateOrderUseCase {
 
         public static PlaceOrderResponse failure(String error) {
             return new PlaceOrderResponse(false, error, null);
+        }
+    }
+
+    class UpdateOrderStatusResponse extends Either<String, OrderStatus> {
+
+        public UpdateOrderStatusResponse(boolean success, String left, OrderStatus right) {
+            super(success, left, right);
+        }
+
+        public static UpdateOrderStatusResponse success(OrderStatus status) {
+            return new UpdateOrderStatusResponse(true, null, status);
+        }
+
+        public static UpdateOrderStatusResponse failure(String error) {
+            return new UpdateOrderStatusResponse(false, error, null);
         }
     }
 }
