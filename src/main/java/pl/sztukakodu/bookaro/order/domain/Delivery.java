@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public enum Delivery {
     SELF_PICKUP(BigDecimal.ZERO),
-    COURIER(new BigDecimal("9.99"));
+    COURIER(new BigDecimal("9.90"));
 
     private final BigDecimal price;
 }

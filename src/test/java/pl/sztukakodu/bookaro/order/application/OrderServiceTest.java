@@ -9,7 +9,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase;
 import pl.sztukakodu.bookaro.catalog.db.BookJpaRepository;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
-import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.OrderItemCommand;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
@@ -74,7 +73,7 @@ class OrderServiceTest {
 
         // then
         assertEquals(50L, availableCopiesOf(effectiveJava));
-        assertEquals(OrderStatus.CANCELLED, queryOrderService.findById(orderId).get().getStatus());
+        assertEquals(OrderStatus.CANCELLED, orderOf(orderId).getStatus());
     }
 
     @Disabled("homework")
@@ -111,7 +110,7 @@ class OrderServiceTest {
 
         // then
         assertEquals(35L, availableCopiesOf(effectiveJava));
-        assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
+        assertEquals(OrderStatus.NEW, orderOf(orderId).getStatus());
     }
 
     @Test
@@ -130,7 +129,7 @@ class OrderServiceTest {
 
         // then
         assertEquals(50L, availableCopiesOf(effectiveJava));
-        assertEquals(OrderStatus.CANCELLED, queryOrderService.findById(orderId).get().getStatus());
+        assertEquals(OrderStatus.CANCELLED, orderOf(orderId).getStatus());
     }
 
     @Test
@@ -148,7 +147,7 @@ class OrderServiceTest {
 
         // then
         assertEquals(35L, availableCopiesOf(effectiveJava));
-        assertEquals(OrderStatus.PAID, queryOrderService.findById(orderId).get().getStatus());
+        assertEquals(OrderStatus.PAID, orderOf(orderId).getStatus());
     }
 
     @Test
@@ -170,6 +169,61 @@ class OrderServiceTest {
         assertTrue(exception.getMessage().contains("Too many copies of book " + effectiveJava.getId() + " requested"));
     }
 
+    @Test
+    public void shippingCostsAreAddedToTotalOrderPrice() {
+        // given
+        Book book = givenBook(50L, "49.90");
+
+        // when
+        Long orderId = placedOrder(book.getId(), 1);
+
+        // then
+        assertEquals("59.80", orderOf(orderId).getFinalPrice().toPlainString());
+    }
+
+    private RichOrder orderOf(Long orderId) {
+        return queryOrderService.findById(orderId).get();
+    }
+
+    @Test
+    public void shippingCostsAreDiscountedOver100zlotys() {
+        // given
+        Book book = givenBook(50L, "49.90");
+
+        // when
+        Long orderId = placedOrder(book.getId(), 3);
+
+        // then
+        RichOrder order = orderOf(orderId);
+        assertEquals("149.70", order.getFinalPrice().toPlainString());
+        assertEquals("149.70", order.getOrderPrice().getItemsPrice().toPlainString());
+    }
+
+    @Test
+    public void cheapestBookIsHalfPricedWhenTotalOver200zlotys() {
+        // given
+        Book book = givenBook(50L, "49.90");
+
+        // when
+        Long orderId = placedOrder(book.getId(), 5);
+
+        // then
+        RichOrder order = orderOf(orderId);
+        assertEquals("224.55", order.getFinalPrice().toPlainString());
+    }
+
+    @Test
+    public void cheapestBookIsFreeWhenTotalOver400zlotys() {
+        // given
+        Book book = givenBook(50L, "49.90");
+
+        // when
+        Long orderId = placedOrder(book.getId(), 10);
+
+        // then
+        assertEquals("449.10", orderOf(orderId).getFinalPrice().toPlainString());
+    }
+
     private Long placedOrder(Long bookId, int copies, String recipient) {
         PlaceOrderCommand command = PlaceOrderCommand
             .builder()
@@ -181,6 +235,10 @@ class OrderServiceTest {
 
     private Long placedOrder(Long bookId, int copies) {
         return placedOrder(bookId, copies, "john@example.org");
+    }
+
+    private Book givenBook(long available, String price) {
+        return bookRepository.save(new Book("Java Concurrency in Practice", 2006, new BigDecimal(price), available));
     }
 
     private Book givenJavaConcurrency(long available) {

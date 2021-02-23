@@ -43,7 +43,7 @@ class PriceServiceTest {
 
         // then
         assertEquals(new BigDecimal("92.98"), price.getItemsPrice());
-        assertEquals(new BigDecimal("102.97"), price.getFinalPrice());
+        assertEquals(new BigDecimal("102.88"), price.getFinalPrice());
     }
 
 }
