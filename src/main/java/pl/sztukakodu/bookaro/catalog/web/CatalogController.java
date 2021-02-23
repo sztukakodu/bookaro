@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -13,7 +14,6 @@ import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookC
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
 
-import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -51,11 +51,11 @@ class CatalogController {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateBook(@PathVariable Long id, @RequestBody RestBookCommand command) {
+    public void updateBook(@PathVariable Long id, @Validated(UpdateValidation.class) @RequestBody RestBookCommand command) {
         UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
-        if(!response.isSuccess()) {
+        if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
@@ -63,7 +63,7 @@ class CatalogController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addBook(@Valid @RequestBody RestBookCommand command) {
+    public ResponseEntity<Void> addBook(@Validated(CreateValidation.class) @RequestBody RestBookCommand command) {
         Book book = catalog.addBook(command.toCreateCommand());
         return ResponseEntity.created(createdBookUri(book)).build();
     }
@@ -78,19 +78,25 @@ class CatalogController {
         return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
     }
 
+    interface UpdateValidation {
+    }
+
+    interface CreateValidation {
+    }
+
     @Data
     private static class RestBookCommand {
-        @NotBlank(message = "Please provide a title")
+        @NotBlank(message = "Please provide a title", groups = {CreateValidation.class})
         private String title;
 
-        @NotBlank(message = "Please provide an author")
+        @NotBlank(message = "Please provide an author", groups = {CreateValidation.class})
         private String author;
 
-        @NotNull
+        @NotNull(groups = {CreateValidation.class})
         private Integer year;
 
-        @NotNull
-        @DecimalMin("0.00")
+        @NotNull(groups = {CreateValidation.class})
+        @DecimalMin(value = "0.00", groups = {CreateValidation.class, UpdateValidation.class})
         private BigDecimal price;
 
         CreateBookCommand toCreateCommand() {

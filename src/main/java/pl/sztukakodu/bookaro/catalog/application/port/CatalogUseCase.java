@@ -3,6 +3,7 @@ package pl.sztukakodu.bookaro.catalog.application.port;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import org.apache.commons.lang.StringUtils;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
 
 import java.math.BigDecimal;
@@ -55,10 +56,10 @@ public interface CatalogUseCase {
         BigDecimal price;
 
         public Book updateFields(Book book) {
-            if (title != null) {
+            if (StringUtils.isNotBlank(title)) {
                 book.setTitle(title);
             }
-            if (author != null) {
+            if (StringUtils.isNotBlank(author)) {
                 book.setAuthor(author);
             }
             if (year != null) {
