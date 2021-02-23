@@ -1,6 +1,7 @@
 package pl.sztukakodu.bookaro.order.application.price;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.sztukakodu.bookaro.order.domain.Order;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ public class PriceService {
         new TotalPriceDiscountStrategy()
     );
 
+    @Transactional
     public OrderPrice calculatePrice(Order order) {
         return new OrderPrice(
             order.getItemsPrice(),
