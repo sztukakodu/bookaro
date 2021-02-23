@@ -170,6 +170,57 @@ class OrderServiceTest {
         assertTrue(exception.getMessage().contains("Too many copies of book " + effectiveJava.getId() + " requested"));
     }
 
+    @Test
+    public void shippingCostsAreAddedToTotalOrderPrice() {
+        // given
+        Book book = givenBook(50L, "49.90");
+
+        // when
+        Long orderId = placedOrder(book.getId(), 1);
+
+        // then
+        assertEquals("59.80", orderOf(orderId).getFinalPrice().toPlainString());
+    }
+
+    @Test
+    public void shippingCostsAreDiscountedOver100zlotys() {
+        // given
+//        Book book = givenBook(50L, "49.90");
+
+        // when
+//        Long orderId = placedOrder(book.getId(), 3);
+
+        // then
+//        RichOrder order = orderOf(orderId);
+//        assertEquals("149.70", order.getFinalPrice().toPlainString());
+//        assertEquals("149.70", order.getOrderPrice().getItemsPrice().toPlainString());
+    }
+
+    @Test
+    public void cheapestBookIsHalfPricedWhenTotalOver200zlotys() {
+        // given
+//        Book book = givenBook(50L, "49.90");
+
+        // when
+//        Long orderId = placedOrder(book.getId(), 5);
+
+        // then
+//        RichOrder order = orderOf(orderId);
+//        assertEquals("224.55", order.getFinalPrice().toPlainString());
+    }
+
+    @Test
+    public void cheapestBookIsFreeWhenTotalOver400zlotys() {
+        // given
+//        Book book = givenBook(50L, "49.90");
+
+        // when
+//        Long orderId = placedOrder(book.getId(), 10);
+
+        // then
+//        assertEquals("449.10", orderOf(orderId).getFinalPrice().toPlainString());
+    }
+
     private Long placedOrder(Long bookId, int copies, String recipient) {
         PlaceOrderCommand command = PlaceOrderCommand
             .builder()
@@ -177,6 +228,15 @@ class OrderServiceTest {
             .item(new OrderItemCommand(bookId, copies))
             .build();
         return service.placeOrder(command).getRight();
+    }
+
+    private RichOrder orderOf(Long orderId) {
+        return queryOrderService.findById(orderId).get();
+    }
+
+
+    private Book givenBook(long available, String price) {
+        return bookRepository.save(new Book("Java Concurrency in Practice", 2006, new BigDecimal(price), available));
     }
 
     private Long placedOrder(Long bookId, int copies) {
