@@ -26,11 +26,14 @@ class OrdersController {
     private final ManipulateOrderUseCase manipulateOrder;
     private final QueryOrderUseCase queryOrder;
 
+    // admin
     @GetMapping
     public List<RichOrder> getOrders() {
         return queryOrder.findAll();
     }
 
+    // konkretny uzytkownik - wlasciciel zamowienia
+    // lub administrator
     @GetMapping("/{id}")
     public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id) {
         return queryOrder.findById(id)
@@ -38,6 +41,7 @@ class OrdersController {
                          .orElse(ResponseEntity.notFound().build());
     }
 
+    // kazdy
     @PostMapping
     @ResponseStatus(CREATED)
     public ResponseEntity<Object> createOrder(@RequestBody PlaceOrderCommand command) {
@@ -53,6 +57,8 @@ class OrdersController {
         return new CreatedURI("/" + orderId).uri();
     }
 
+    // administrator - dowolny status
+    // wlasciciel zamowienia - anulowanie
     @PutMapping("/{id}/status")
     @ResponseStatus(ACCEPTED)
     public void updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
@@ -65,6 +71,7 @@ class OrdersController {
         manipulateOrder.updateOrderStatus(command);
     }
 
+    // administrator
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
