@@ -16,6 +16,7 @@ class AdminController {
 
     private final CatalogInitializerUseCase initializer;
 
+    // administrator
     @PostMapping("/initialization")
     @Transactional
     public void initialize() {

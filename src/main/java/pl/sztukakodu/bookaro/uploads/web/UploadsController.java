@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 class UploadsController {
     private final UploadUseCase upload;
 
+    // kazdy uzytkownik
     @GetMapping("/{id}")
     public ResponseEntity<UploadResponse> getUpload(@PathVariable Long id) {
         return upload.getById(id)
@@ -36,6 +37,7 @@ class UploadsController {
                      .orElse(ResponseEntity.notFound().build());
     }
 
+    // kazdy uzytkownik
     @GetMapping("/{id}/file")
     public ResponseEntity<Resource> getUploadFile(@PathVariable Long id) {
         return upload.getById(id)

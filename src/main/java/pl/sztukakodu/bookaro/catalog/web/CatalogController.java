@@ -31,6 +31,7 @@ import java.util.Set;
 class CatalogController {
     private final CatalogUseCase catalog;
 
+    // kazdy uzytkownik
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Book> getAll(
@@ -46,6 +47,7 @@ class CatalogController {
         return catalog.findAll();
     }
 
+    // kazdy uzytkownik
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         return catalog
@@ -54,6 +56,7 @@ class CatalogController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    // administrator
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateBook(@PathVariable Long id, @RequestBody RestBookCommand command) {
@@ -64,6 +67,7 @@ class CatalogController {
         }
     }
 
+    // administrator
     @PutMapping(value = "/{id}/cover", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void addBookCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
@@ -75,12 +79,14 @@ class CatalogController {
         ));
     }
 
+    // administrator
     @DeleteMapping("/{id}/cover")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeBookCover(@PathVariable Long id) {
         catalog.removeBookCover(id);
     }
 
+    // administrator
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> addBook(@Valid @RequestBody RestBookCommand command) {
@@ -88,6 +94,7 @@ class CatalogController {
         return ResponseEntity.created(createdBookUri(book)).build();
     }
 
+    // administrator
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) {
