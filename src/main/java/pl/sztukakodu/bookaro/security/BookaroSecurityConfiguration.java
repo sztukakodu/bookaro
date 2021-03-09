@@ -1,4 +1,4 @@
-package pl.sztukakodu.bookaro;
+package pl.sztukakodu.bookaro.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
