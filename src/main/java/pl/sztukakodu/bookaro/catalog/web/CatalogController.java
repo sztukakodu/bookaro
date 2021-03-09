@@ -31,7 +31,6 @@ import java.util.Set;
 class CatalogController {
     private final CatalogUseCase catalog;
 
-    // kazdy uzytkownik
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Book> getAll(
@@ -47,7 +46,6 @@ class CatalogController {
         return catalog.findAll();
     }
 
-    // kazdy uzytkownik
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         return catalog

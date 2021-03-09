@@ -5,6 +5,9 @@ POST http://localhost:8080/admin/data
 ### Catalog
 GET http://localhost:8080/catalog
 
+### Authors
+GET http://localhost:8080/authors
+
 ###
 POST http://localhost:8080/orders
 Content-Type: application/json
@@ -12,11 +15,11 @@ Content-Type: application/json
 {
   "items": [
     {
-      "bookId": 3,
+      "bookId": 89,
       "quantity": 1
     },
     {
-      "bookId": 4,
+      "bookId": 12,
       "quantity": 2
     }
   ],
@@ -31,8 +34,10 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/orders
+GET http://localhost:8080/orders/115
 
+###
+GET http://localhost:8080/uploads/90/file
 
 ###
 PUT http://localhost:8080/orders/16/status

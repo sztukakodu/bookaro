@@ -41,7 +41,6 @@ class OrdersController {
                          .orElse(ResponseEntity.notFound().build());
     }
 
-    // kazdy
     @PostMapping
     @ResponseStatus(CREATED)
     public ResponseEntity<Object> createOrder(@RequestBody PlaceOrderCommand command) {
@@ -59,7 +58,7 @@ class OrdersController {
 
     // administrator - dowolny status
     // wlasciciel zamowienia - anulowanie
-    @PutMapping("/{id}/status")
+    @PatchMapping("/{id}/status")
     @ResponseStatus(ACCEPTED)
     public void updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String status = body.get("status");
