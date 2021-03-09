@@ -1,15 +1,15 @@
 package pl.sztukakodu.bookaro.order.web;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import pl.sztukakodu.bookaro.order.application.RichOrder;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.UpdateStatusCommand;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
-import pl.sztukakodu.bookaro.order.application.RichOrder;
 import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 import pl.sztukakodu.bookaro.web.CreatedURI;
 
@@ -26,7 +26,7 @@ class OrdersController {
     private final ManipulateOrderUseCase manipulateOrder;
     private final QueryOrderUseCase queryOrder;
 
-    // admin
+    @Secured("ROLE_ADMIN")
     @GetMapping
     public List<RichOrder> getOrders() {
         return queryOrder.findAll();
@@ -34,6 +34,7 @@ class OrdersController {
 
     // konkretny uzytkownik - wlasciciel zamowienia
     // lub administrator
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
     public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id) {
         return queryOrder.findById(id)
@@ -58,6 +59,7 @@ class OrdersController {
 
     // administrator - dowolny status
     // wlasciciel zamowienia - anulowanie
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PatchMapping("/{id}/status")
     @ResponseStatus(ACCEPTED)
     public void updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
@@ -70,7 +72,7 @@ class OrdersController {
         manipulateOrder.updateOrderStatus(command);
     }
 
-    // administrator
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {

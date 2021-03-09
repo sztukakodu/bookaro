@@ -2,6 +2,7 @@ package pl.sztukakodu.bookaro.catalog.web;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,12 +12,12 @@ import pl.sztukakodu.bookaro.catalog.application.port.CatalogInitializerUseCase;
 @Slf4j
 @RestController
 @RequestMapping("/admin")
+@Secured("ROLE_ADMIN")
 @AllArgsConstructor
 class AdminController {
 
     private final CatalogInitializerUseCase initializer;
 
-    // administrator
     @PostMapping("/initialization")
     @Transactional
     public void initialize() {
