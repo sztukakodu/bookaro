@@ -73,13 +73,12 @@ class OrdersController {
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PatchMapping("/{id}/status")
     @ResponseStatus(ACCEPTED)
-    public void updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public void updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body, @AuthenticationPrincipal User user) {
         String status = body.get("status");
         OrderStatus orderStatus = OrderStatus
             .parseString(status)
             .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Unknown status: " + status));
-        // TODO-Darek: naprawic w module security
-        UpdateStatusCommand command = new UpdateStatusCommand(id, orderStatus, "admin@example.org");
+        UpdateStatusCommand command = new UpdateStatusCommand(id, orderStatus, user.getUsername());
         manipulateOrder.updateOrderStatus(command);
     }
 

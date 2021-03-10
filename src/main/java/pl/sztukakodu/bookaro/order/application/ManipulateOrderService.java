@@ -78,6 +78,7 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
         return repository
             .findById(command.getOrderId())
             .map(order -> {
+                // todo: zmienic na ładną metodę "authorize"
                 if (!hasAccess(command, order)) {
                     return UpdateStatusResponse.failure("Unauthorized");
                 }
@@ -92,6 +93,9 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     private boolean hasAccess(UpdateStatusCommand command, Order order) {
+        // TODO-Darek: walidować z rolą ROLE_ADMIN a nie z adresem email
+        // TODO-Darek: pozmieniać wszędzie gdzie wołam admin@example.org
+        // TODO-Darek: użyć klasy UserSecurity
         String email = command.getEmail();
         return email.equalsIgnoreCase(order.getRecipient().getEmail()) ||
             email.equalsIgnoreCase("admin@example.org");
