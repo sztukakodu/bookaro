@@ -1,8 +1,12 @@
 package pl.sztukakodu.bookaro.order.web;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.sztukakodu.bookaro.order.application.RichOrder;
@@ -11,6 +15,7 @@ import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.Place
 import pl.sztukakodu.bookaro.order.application.port.ManipulateOrderUseCase.UpdateStatusCommand;
 import pl.sztukakodu.bookaro.order.application.port.QueryOrderUseCase;
 import pl.sztukakodu.bookaro.order.domain.OrderStatus;
+import pl.sztukakodu.bookaro.security.UserSecurity;
 import pl.sztukakodu.bookaro.web.CreatedURI;
 
 import java.net.URI;
@@ -25,6 +30,7 @@ import static org.springframework.http.HttpStatus.*;
 class OrdersController {
     private final ManipulateOrderUseCase manipulateOrder;
     private final QueryOrderUseCase queryOrder;
+    private final UserSecurity userSecurity;
 
     @Secured("ROLE_ADMIN")
     @GetMapping
@@ -32,14 +38,19 @@ class OrdersController {
         return queryOrder.findAll();
     }
 
-    // konkretny uzytkownik - wlasciciel zamowienia
-    // lub administrator
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
-    public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id, @AuthenticationPrincipal User user) {
         return queryOrder.findById(id)
-                         .map(ResponseEntity::ok)
+                         .map(order -> authorize(order, user))
                          .orElse(ResponseEntity.notFound().build());
+    }
+
+    private ResponseEntity<RichOrder> authorize(RichOrder order, User user) {
+        if(userSecurity.isOwnerOrAdmin(order.getRecipient().getEmail(), user)) {
+            return ResponseEntity.ok(order);
+        }
+        return ResponseEntity.status(FORBIDDEN).build();
     }
 
     @PostMapping
