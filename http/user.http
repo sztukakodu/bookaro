@@ -8,5 +8,25 @@ Content-Type: application/json
 }
 
 ### orders
+GET localhost:8080/catalog
 
-GET localhost:8080/orders
+
+### registration
+POST localhost:8080/users
+Content-Type: application/json
+
+{
+  "username": "darek@example.org",
+  "password": "xxx"
+}
+
+### login
+
+// @no-redirect
+POST localhost:8080/login
+Content-Type: application/json
+
+{
+"username": "darek@example.org",
+"password": "xxx"
+}

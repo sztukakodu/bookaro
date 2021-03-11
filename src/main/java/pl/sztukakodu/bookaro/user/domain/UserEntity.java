@@ -1,6 +1,7 @@
 package pl.sztukakodu.bookaro.user.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,12 +15,18 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 public class UserEntity extends BaseEntity {
 
     private String username;
     private String password;
+
+    public UserEntity(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.roles = Set.of("ROLE_USER");
+    }
 
     @CollectionTable(
         name = "users_roles",
