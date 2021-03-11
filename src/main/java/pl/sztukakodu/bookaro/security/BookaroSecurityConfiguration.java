@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -22,6 +23,7 @@ import pl.sztukakodu.bookaro.user.db.UserEntityRepository;
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @EnableConfigurationProperties(AdminConfig.class)
+//@Profile({"development", "production"})
 class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserEntityRepository userEntityRepository;
