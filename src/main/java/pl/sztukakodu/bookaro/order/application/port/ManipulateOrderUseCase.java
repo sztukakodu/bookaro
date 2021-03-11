@@ -1,6 +1,8 @@
 package pl.sztukakodu.bookaro.order.application.port;
 
 import lombok.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
 import pl.sztukakodu.bookaro.commons.Either;
 import pl.sztukakodu.bookaro.order.domain.Delivery;
 import pl.sztukakodu.bookaro.order.domain.OrderItem;
@@ -37,7 +39,7 @@ public interface ManipulateOrderUseCase {
     class UpdateStatusCommand {
         Long orderId;
         OrderStatus status;
-        String email;
+        User user;
     }
 
     class PlaceOrderResponse extends Either<String, Long> {
@@ -54,8 +56,8 @@ public interface ManipulateOrderUseCase {
         }
     }
 
-    class UpdateStatusResponse extends Either<String, OrderStatus> {
-        public UpdateStatusResponse(boolean success, String left, OrderStatus right) {
+    class UpdateStatusResponse extends Either<Error, OrderStatus> {
+        public UpdateStatusResponse(boolean success, Error left, OrderStatus right) {
             super(success, left, right);
         }
 
@@ -63,8 +65,17 @@ public interface ManipulateOrderUseCase {
             return new UpdateStatusResponse(true, null, status);
         }
 
-        public static UpdateStatusResponse failure(String error) {
+        public static UpdateStatusResponse failure(Error error) {
             return new UpdateStatusResponse(false, error, null);
         }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    enum Error {
+        NOT_FOUND(HttpStatus.NOT_FOUND),
+        FORBIDDEN(HttpStatus.FORBIDDEN);
+
+        private final HttpStatus status;
     }
 }

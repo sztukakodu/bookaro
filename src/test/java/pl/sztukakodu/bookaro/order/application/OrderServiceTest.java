@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.annotation.DirtiesContext;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase;
 import pl.sztukakodu.bookaro.catalog.db.BookJpaRepository;
@@ -20,6 +22,7 @@ import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,12 +68,12 @@ class OrderServiceTest {
     public void userCanRevokeOrder() {
         // given
         Book effectiveJava = givenEffectiveJava(50L);
-        String recipient = "marek@example.org";
-        Long orderId = placedOrder(effectiveJava.getId(), 15, recipient);
+        String marek = "marek@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, marek);
         assertEquals(35L, availableCopiesOf(effectiveJava));
 
         // when
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, recipient);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, user(marek));
         service.updateOrderStatus(command);
 
         // then
@@ -107,7 +110,7 @@ class OrderServiceTest {
         assertEquals(35L, availableCopiesOf(effectiveJava));
 
         // when
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, "marek@example.org");
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, user("marek@example.org"));
         service.updateOrderStatus(command);
 
         // then
@@ -116,7 +119,6 @@ class OrderServiceTest {
     }
 
     @Test
-    // TODO-Darek: poprawic w module security
     public void adminCannotRevokeOtherUsersOrder() {
         // given
         Book effectiveJava = givenEffectiveJava(50L);
@@ -125,8 +127,7 @@ class OrderServiceTest {
         assertEquals(35L, availableCopiesOf(effectiveJava));
 
         // when
-        String admin = "admin@example.org";
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, admin);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, adminUser());
         service.updateOrderStatus(command);
 
         // then
@@ -143,8 +144,7 @@ class OrderServiceTest {
         assertEquals(35L, availableCopiesOf(effectiveJava));
 
         // when
-        String admin = "admin@example.org";
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, admin);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, adminUser());
         service.updateOrderStatus(command);
 
         // then
@@ -251,6 +251,14 @@ class OrderServiceTest {
 
     private Book givenEffectiveJava(long available) {
         return bookRepository.save(new Book("Effective Java", 2005, new BigDecimal("199.90"), available));
+    }
+
+    private User user(String email) {
+        return new User(email, "", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    }
+
+    private User adminUser() {
+        return new User("admin", "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
     }
 
     private Recipient recipient() {
