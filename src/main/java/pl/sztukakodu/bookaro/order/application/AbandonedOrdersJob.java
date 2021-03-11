@@ -3,6 +3,7 @@ package pl.sztukakodu.bookaro.order.application;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sztukakodu.bookaro.clock.Clock;
@@ -23,6 +24,7 @@ class AbandonedOrdersJob {
     private final OrderJpaRepository repository;
     private final ManipulateOrderUseCase orderUseCase;
     private final OrdersProperties properties;
+    private final User systemAdmin;
     private final Clock clock;
 
     @Transactional
@@ -33,9 +35,7 @@ class AbandonedOrdersJob {
         List<Order> orders = repository.findByStatusAndCreatedAtLessThanEqual(OrderStatus.NEW, olderThan);
         log.info("Found orders to be abandoned: " + orders.size());
         orders.forEach(order -> {
-            // TODO-Darek: naprawic w module security
-            String adminEmail = "admin@example.org";
-            UpdateStatusCommand command = new UpdateStatusCommand(order.getId(), OrderStatus.ABANDONED, adminEmail);
+            UpdateStatusCommand command = new UpdateStatusCommand(order.getId(), OrderStatus.ABANDONED, systemAdmin);
             orderUseCase.updateOrderStatus(command);
         });
     }

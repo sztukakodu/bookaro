@@ -12,6 +12,7 @@ import pl.sztukakodu.bookaro.order.domain.Order;
 import pl.sztukakodu.bookaro.order.domain.OrderItem;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
 import pl.sztukakodu.bookaro.order.domain.UpdateStatusResult;
+import pl.sztukakodu.bookaro.security.UserSecurity;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
     private final OrderJpaRepository repository;
     private final BookJpaRepository bookJpaRepository;
     private final RecipientJpaRepository recipientJpaRepository;
+    private final UserSecurity userSecurity;
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
@@ -74,13 +76,13 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     @Override
+    @Transactional
     public UpdateStatusResponse updateOrderStatus(UpdateStatusCommand command) {
         return repository
             .findById(command.getOrderId())
             .map(order -> {
-                // todo: zmienic na ładną metodę "authorize"
-                if (!hasAccess(command, order)) {
-                    return UpdateStatusResponse.failure("Unauthorized");
+                if (!userSecurity.isOwnerOrAdmin(order.getRecipient().getEmail(), command.getUser())) {
+                    return UpdateStatusResponse.failure(Error.FORBIDDEN);
                 }
                 UpdateStatusResult result = order.updateStatus(command.getStatus());
                 if (result.isRevoked()) {
@@ -89,16 +91,7 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
                 repository.save(order);
                 return UpdateStatusResponse.success(order.getStatus());
             })
-            .orElse(UpdateStatusResponse.failure("Order not found"));
-    }
-
-    private boolean hasAccess(UpdateStatusCommand command, Order order) {
-        // TODO-Darek: walidować z rolą ROLE_ADMIN a nie z adresem email
-        // TODO-Darek: pozmieniać wszędzie gdzie wołam admin@example.org
-        // TODO-Darek: użyć klasy UserSecurity
-        String email = command.getEmail();
-        return email.equalsIgnoreCase(order.getRecipient().getEmail()) ||
-            email.equalsIgnoreCase("admin@example.org");
+            .orElse(UpdateStatusResponse.failure(Error.NOT_FOUND));
     }
 
     private Set<Book> revokeBooks(Set<OrderItem> items) {
