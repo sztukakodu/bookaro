@@ -12,23 +12,20 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pl.sztukakodu.bookaro.user.db.UserEntityRepository;
 
-import java.util.List;
-
 @AllArgsConstructor
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true)
-@EnableConfigurationProperties(AdminConfig.class)
+@EnableConfigurationProperties(AdminUserConfig.class)
 class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final UserEntityRepository userEntityRepository;
-    private final AdminConfig config;
+    private final UserEntityRepository repository;
+    private final AdminUserConfig config;
 
     @Bean
     User systemUser() {
