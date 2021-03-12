@@ -2,10 +2,9 @@ package pl.sztukakodu.bookaro.order.application.port;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import pl.sztukakodu.bookaro.commons.Either;
 import pl.sztukakodu.bookaro.order.domain.Delivery;
-import pl.sztukakodu.bookaro.order.domain.OrderItem;
 import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 import pl.sztukakodu.bookaro.order.domain.Recipient;
 
@@ -39,7 +38,7 @@ public interface ManipulateOrderUseCase {
     class UpdateStatusCommand {
         Long orderId;
         OrderStatus status;
-        User user;
+        UserDetails user;
     }
 
     class PlaceOrderResponse extends Either<String, Long> {

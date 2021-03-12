@@ -1,6 +1,7 @@
 package pl.sztukakodu.bookaro.user.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -9,6 +10,7 @@ import pl.sztukakodu.bookaro.jpa.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -16,6 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 public class UserEntity extends BaseEntity {
 
     private String username;
@@ -27,11 +30,17 @@ public class UserEntity extends BaseEntity {
     )
     @Column(name = "role")
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> roles;
+    private Set<String> roles = new HashSet<>();
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public UserEntity(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.roles = Set.of("ROLE_USER");
+    }
 }
