@@ -21,11 +21,11 @@ import pl.sztukakodu.bookaro.user.db.UserEntityRepository;
 @AllArgsConstructor
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true)
-@EnableConfigurationProperties(AdminUserConfig.class)
+@EnableConfigurationProperties(AdminConfig.class)
 class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final UserEntityRepository repository;
-    private final AdminUserConfig config;
+    private final UserEntityRepository userEntityRepository;
+    private final AdminConfig config;
 
     @Bean
     User systemUser() {
