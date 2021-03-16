@@ -21,9 +21,18 @@
 		<commons.lang.version>3.11</commons.lang.version>
 		<postgres.version>42.2.18.jre7</postgres.version>
 		<opencsv.version>5.3</opencsv.version>
+		<flyway.version>6.5.7</flyway.version>
+		<flyway.user>admin</flyway.user>
+		<flyway.password>xxx</flyway.password>
+		<flyway.url>jdbc:postgresql://localhost:7432/bookaro</flyway.url>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>${flyway.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -98,6 +107,19 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>${flyway.version}</version>
+				<configuration>
+					<url>${flyway.url}</url>
+					<user>${flyway.user}</user>
+					<password>${flyway.password}</password>
+					<schemas>
+						<schema>public</schema>
+					</schemas>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
