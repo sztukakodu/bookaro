@@ -21,9 +21,15 @@
 		<commons.lang.version>3.11</commons.lang.version>
 		<postgres.version>42.2.18.jre7</postgres.version>
 		<opencsv.version>5.3</opencsv.version>
+		<flyway.version>6.5.7</flyway.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>${flyway.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
