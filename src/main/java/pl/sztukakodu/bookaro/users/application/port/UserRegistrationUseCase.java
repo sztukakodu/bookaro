@@ -1,7 +1,7 @@
 package pl.sztukakodu.bookaro.users.application.port;
 
 import pl.sztukakodu.bookaro.commons.Either;
-import pl.sztukakodu.bookaro.user.domain.UserEntity;
+import pl.sztukakodu.bookaro.users.domain.UserEntity;
 
 public interface UserRegistrationUseCase {
     RegisterResponse register(String username, String password);

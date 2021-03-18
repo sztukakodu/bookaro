@@ -1,4 +1,4 @@
-package pl.sztukakodu.bookaro.user.domain;
+package pl.sztukakodu.bookaro.users.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

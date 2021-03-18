@@ -17,7 +17,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pl.sztukakodu.bookaro.user.db.UserEntityRepository;
+import pl.sztukakodu.bookaro.users.db.UserEntityRepository;
 
 @AllArgsConstructor
 @Configuration
