@@ -1,0 +1,40 @@
+###
+GET localhost:8080/catalog
+
+###
+GET localhost:8080/orders
+Authorization: Basic marek@example.org xyz
+
+###
+POST http://localhost:8080/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "bookId": 73,
+      "quantity": 1
+    },
+    {
+      "bookId": 51,
+      "quantity": 2
+    }
+  ],
+  "recipient": {
+    "name": "Jan Kowalski",
+    "phone": "123-456-789",
+    "street": "Cwiartki 3/4",
+    "city": "Krakow",
+    "zipCode": "30-150",
+    "email": "jan@example.org"
+  }
+}
+
+###
+POST localhost:8080/users
+Content-Type: application/json
+
+{
+  "username": "marek@example.org",
+  "password": "xyz"
+}
