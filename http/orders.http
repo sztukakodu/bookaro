@@ -40,9 +40,13 @@ GET http://localhost:8080/orders/115
 GET http://localhost:8080/uploads/90/file
 
 ###
-PUT http://localhost:8080/orders/16/status
+GET http://localhost:8080/orders
+
+###
+PATCH http://localhost:8080/orders/163/status
 Content-Type: application/json
+Authorization: Basic admin xxx
 
 {
-  "status": "CANCELED"
+  "status": "CANCELLED"
 }

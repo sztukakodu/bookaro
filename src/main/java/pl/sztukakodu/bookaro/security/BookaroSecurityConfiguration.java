@@ -39,7 +39,7 @@ class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http
             .authorizeRequests()
-            .mvcMatchers(HttpMethod.GET, "/catalog/**", "/uploads/**", "/authors/**").permitAll()
+            .mvcMatchers(HttpMethod.GET, "/catalog/**", "/uploads/**", "/authors/**", "/actuator/**").permitAll()
             .mvcMatchers(HttpMethod.POST, "/orders", "/login", "/users").permitAll()
             .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
             .anyRequest().authenticated()

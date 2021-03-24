@@ -1,5 +1,7 @@
 package pl.sztukakodu.bookaro.order.application;
 
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,7 +10,10 @@ import pl.sztukakodu.bookaro.order.application.price.OrderPrice;
 import pl.sztukakodu.bookaro.order.application.price.PriceService;
 import pl.sztukakodu.bookaro.order.db.OrderJpaRepository;
 import pl.sztukakodu.bookaro.order.domain.Order;
+import pl.sztukakodu.bookaro.order.domain.OrderStatus;
 
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,8 +21,24 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 class QueryOrderService implements QueryOrderUseCase {
+
     private final OrderJpaRepository repository;
     private final PriceService priceService;
+    private final MeterRegistry metrics;
+
+    @PostConstruct
+    public void init() {
+        Gauge.builder("orders_count", repository::count)
+             .tags("type", "total")
+             .register(metrics);
+        Arrays.stream(OrderStatus.values())
+              .forEach(status -> {
+                  Gauge.builder("orders_count", () -> repository.countByStatus(status))
+                       .tags("type", status.name().toLowerCase())
+                       .register(metrics);
+              });
+
+    }
 
     @Override
     @Transactional

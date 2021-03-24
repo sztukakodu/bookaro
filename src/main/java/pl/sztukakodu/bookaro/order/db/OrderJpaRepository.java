@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface OrderJpaRepository extends JpaRepository<Order, Long> {
     List<Order> findByStatusAndCreatedAtLessThanEqual(OrderStatus status, LocalDateTime timestamp);
+    Long countByStatus(OrderStatus status);
 }
