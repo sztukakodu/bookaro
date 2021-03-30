@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pl.sztukakodu.bookaro.users.db.UserEntityRepository;
 
 @AllArgsConstructor
@@ -24,7 +26,14 @@ import pl.sztukakodu.bookaro.users.db.UserEntityRepository;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @EnableConfigurationProperties(AdminConfig.class)
 @Profile("!test")
-class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter {
+class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedMethods("*")
+                .allowedOrigins("*");
+    }
 
     private final UserEntityRepository userEntityRepository;
     private final AdminConfig config;

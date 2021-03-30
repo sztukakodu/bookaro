@@ -9,6 +9,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.CreateBookCommand;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookCommand;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toList;
+
 @RequestMapping("/catalog")
 @RestController
 @AllArgsConstructor
@@ -34,17 +37,36 @@ class CatalogController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Book> getAll(
+    public List<RestBook> getAll(
         @RequestParam Optional<String> title,
         @RequestParam Optional<String> author) {
+        List<Book> books;
         if (title.isPresent() && author.isPresent()) {
-            return catalog.findByTitleAndAuthor(title.get(), author.get());
+            books = catalog.findByTitleAndAuthor(title.get(), author.get());
         } else if (title.isPresent()) {
-            return catalog.findByTitle(title.get());
+            books = catalog.findByTitle(title.get());
         } else if (author.isPresent()) {
-            return catalog.findByAuthor(author.get());
+            books = catalog.findByAuthor(author.get());
+        } else {
+            books = catalog.findAll();
         }
-        return catalog.findAll();
+        return books.stream().map(this::toRestBook).collect(toList());
+    }
+
+    private RestBook toRestBook(Book book) {
+        String coverUrl = ServletUriComponentsBuilder
+            .fromCurrentContextPath()
+            .path("/uploads/{id}/file")
+            .build(book.getCoverId())
+            .toASCIIString();
+        return new RestBook(
+            book.getId(),
+            book.getTitle(),
+            book.getYear(),
+            book.getPrice(),
+            coverUrl,
+            book.getAvailable() > 0
+        );
     }
 
     @GetMapping("/{id}")

@@ -40,7 +40,7 @@ class CatalogControllerIT {
         givenJavaConcurrencyInPractice();
 
         // when
-        List<Book> all = controller.getAll(Optional.empty(), Optional.empty());
+        List<RestBook> all = controller.getAll(Optional.empty(), Optional.empty());
 
         // then
         assertEquals(2, all.size());
@@ -53,7 +53,7 @@ class CatalogControllerIT {
         givenJavaConcurrencyInPractice();
 
         // when
-        List<Book> all = controller.getAll(Optional.empty(), Optional.of("Bloch"));
+        List<RestBook> all = controller.getAll(Optional.empty(), Optional.of("Bloch"));
 
         // then
         assertEquals(1, all.size());
@@ -67,7 +67,7 @@ class CatalogControllerIT {
         givenJavaConcurrencyInPractice();
 
         // when
-        List<Book> all = controller.getAll(Optional.of("Java Concurrency in Practice"), Optional.empty());
+        List<RestBook> all = controller.getAll(Optional.of("Java Concurrency in Practice"), Optional.empty());
 
         // then
         assertEquals(1, all.size());

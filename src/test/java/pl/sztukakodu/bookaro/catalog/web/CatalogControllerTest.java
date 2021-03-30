@@ -34,7 +34,7 @@ class CatalogControllerTest {
         when(catalogUseCase.findAll()).thenReturn(List.of(effective, concurrency));
 
         // when
-        List<Book> all = controller.getAll(Optional.empty(), Optional.empty());
+        List<RestBook> all = controller.getAll(Optional.empty(), Optional.empty());
 
         // then
         assertEquals(2, all.size());
