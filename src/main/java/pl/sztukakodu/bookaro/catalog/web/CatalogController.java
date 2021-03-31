@@ -15,6 +15,7 @@ import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.CreateBookC
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookCommand;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookCoverCommand;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.UpdateBookResponse;
+import pl.sztukakodu.bookaro.catalog.domain.Author;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.web.CreatedURI;
 
@@ -26,6 +27,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -65,8 +67,13 @@ class CatalogController {
             book.getYear(),
             book.getPrice(),
             coverUrl,
-            book.getAvailable() > 0
+            book.getAvailable() > 0,
+            toRestAuthors(book.getAuthors())
         );
+    }
+
+    private Set<RestAuthor> toRestAuthors(Set<Author> authors) {
+        return authors.stream().map(a -> new RestAuthor(a.getName())).collect(Collectors.toSet());
     }
 
     @GetMapping("/{id}")
