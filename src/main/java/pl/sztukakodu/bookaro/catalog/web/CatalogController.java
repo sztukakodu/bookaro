@@ -19,6 +19,7 @@ import pl.sztukakodu.bookaro.catalog.domain.Author;
 import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.web.CreatedURI;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.io.IOException;
@@ -40,6 +41,7 @@ class CatalogController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<RestBook> getAll(
+        HttpServletRequest request,
         @RequestParam Optional<String> title,
         @RequestParam Optional<String> author) {
         List<Book> books;
@@ -52,12 +54,14 @@ class CatalogController {
         } else {
             books = catalog.findAll();
         }
-        return books.stream().map(this::toRestBook).collect(toList());
+        return books.stream()
+                    .map(book -> toRestBook(request, book))
+                    .collect(toList());
     }
 
-    private RestBook toRestBook(Book book) {
+    private RestBook toRestBook(HttpServletRequest request, Book book) {
         String coverUrl = ServletUriComponentsBuilder
-            .fromCurrentContextPath()
+            .fromRequest(request)
             .path("/uploads/{id}/file")
             .build(book.getCoverId())
             .toASCIIString();
