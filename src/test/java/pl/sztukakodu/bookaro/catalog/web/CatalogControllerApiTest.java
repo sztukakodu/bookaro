@@ -40,12 +40,12 @@ class CatalogControllerApiTest {
         Book effective = new Book("Effective Java", 2005, new BigDecimal("99.00"), 50L);
         Book concurrency = new Book("Java Concurrency", 2006, new BigDecimal("99.00"), 50L);
         Mockito.when(catalogUseCase.findAll()).thenReturn(List.of(effective, concurrency));
-        ParameterizedTypeReference<List<Book>> type = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<List<RestBook>> type = new ParameterizedTypeReference<>() {
         };
 
         // when
         RequestEntity<Void> request = RequestEntity.get(URI.create("http://localhost:" + port + "/catalog")).build();
-        ResponseEntity<List<Book>> response = restTemplate.exchange(request, type);
+        ResponseEntity<List<RestBook>> response = restTemplate.exchange(request, type);
 
         // then
         assertEquals(2, response.getBody().size());

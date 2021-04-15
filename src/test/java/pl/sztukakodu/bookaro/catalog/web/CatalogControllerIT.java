@@ -4,14 +4,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase;
 import pl.sztukakodu.bookaro.catalog.application.port.CatalogUseCase.CreateBookCommand;
 import pl.sztukakodu.bookaro.catalog.db.AuthorJpaRepository;
 import pl.sztukakodu.bookaro.catalog.domain.Author;
-import pl.sztukakodu.bookaro.catalog.domain.Book;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,7 @@ class CatalogControllerIT {
         givenJavaConcurrencyInPractice();
 
         // when
-        List<Book> all = controller.getAll(Optional.empty(), Optional.empty());
+        List<RestBook> all = controller.getAll(mockRequest(), Optional.empty(), Optional.empty());
 
         // then
         assertEquals(2, all.size());
@@ -53,7 +54,7 @@ class CatalogControllerIT {
         givenJavaConcurrencyInPractice();
 
         // when
-        List<Book> all = controller.getAll(Optional.empty(), Optional.of("Bloch"));
+        List<RestBook> all = controller.getAll(mockRequest(), Optional.empty(), Optional.of("Bloch"));
 
         // then
         assertEquals(1, all.size());
@@ -67,11 +68,15 @@ class CatalogControllerIT {
         givenJavaConcurrencyInPractice();
 
         // when
-        List<Book> all = controller.getAll(Optional.of("Java Concurrency in Practice"), Optional.empty());
+        List<RestBook> all = controller.getAll(mockRequest(), Optional.of("Java Concurrency in Practice"), Optional.empty());
 
         // then
         assertEquals(1, all.size());
         assertEquals("Java Concurrency in Practice", all.get(0).getTitle());
+    }
+
+    private HttpServletRequest mockRequest() {
+        return new MockHttpServletRequest();
     }
 
     private void givenJavaConcurrencyInPractice() {

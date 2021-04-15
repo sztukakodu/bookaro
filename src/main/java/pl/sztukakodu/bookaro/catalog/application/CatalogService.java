@@ -11,7 +11,6 @@ import pl.sztukakodu.bookaro.catalog.domain.Book;
 import pl.sztukakodu.bookaro.uploads.application.ports.UploadUseCase;
 import pl.sztukakodu.bookaro.uploads.domain.Upload;
 
-import javax.persistence.EntityManager;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +29,7 @@ class CatalogService implements CatalogUseCase {
 
     @Override
     public List<Book> findAll() {
-        return repository.findAllEager();
+        return repository.findAll();
     }
 
     @Override
