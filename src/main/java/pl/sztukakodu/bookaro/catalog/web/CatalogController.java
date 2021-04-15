@@ -60,17 +60,20 @@ class CatalogController {
     }
 
     private RestBook toRestBook(HttpServletRequest request, Book book) {
-        String coverUrl = ServletUriComponentsBuilder
-            .fromRequest(request)
-            .path("/uploads/{id}/file")
-            .build(book.getCoverId())
-            .toASCIIString();
+        Optional<String> coverUrl = Optional
+            .ofNullable(book.getCoverId())
+            .map(coverId -> ServletUriComponentsBuilder
+                .fromContextPath(request)
+                .path("/uploads/{id}/file")
+                .build(coverId)
+                .toASCIIString()
+            );
         return new RestBook(
             book.getId(),
             book.getTitle(),
             book.getYear(),
             book.getPrice(),
-            coverUrl,
+            coverUrl.orElse(null),
             book.getAvailable() > 0,
             toRestAuthors(book.getAuthors())
         );
