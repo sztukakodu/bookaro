@@ -1,7 +1,7 @@
 package pl.sztukakodu.bookaro.security;
 
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,6 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pl.sztukakodu.bookaro.users.db.UserEntityRepository;
 
-@AllArgsConstructor
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @EnableConfigurationProperties(AdminConfig.class)
@@ -30,6 +29,16 @@ class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter implemen
 
     private final UserEntityRepository userEntityRepository;
     private final AdminConfig config;
+    private final String allowedOrigins;
+
+    BookaroSecurityConfiguration(
+        @Value("${app.security.allowedOrigins}") String allowedOrigins,
+        UserEntityRepository userEntityRepository,
+        AdminConfig config) {
+        this.allowedOrigins = allowedOrigins;
+        this.userEntityRepository = userEntityRepository;
+        this.config = config;
+    }
 
     @Bean
     User systemUser() {
@@ -40,7 +49,7 @@ class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter implemen
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedMethods("*")
-                .allowedOrigins("*");
+                .allowedOrigins(allowedOrigins);
     }
 
     @Override
@@ -53,9 +62,9 @@ class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter implemen
             .mvcMatchers(HttpMethod.POST, "/orders", "/login", "/users").permitAll()
             .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
             .anyRequest().authenticated()
-        .and()
+            .and()
             .httpBasic()
-        .and()
+            .and()
             .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
