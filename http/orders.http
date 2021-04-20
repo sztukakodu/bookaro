@@ -34,7 +34,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/orders/115
+GET http://localhost:8080/orders
 
 ###
 GET http://localhost:8080/uploads/90/file
