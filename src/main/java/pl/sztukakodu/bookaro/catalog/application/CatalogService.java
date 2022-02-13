@@ -70,7 +70,8 @@ class CatalogService implements CatalogUseCase {
     @Transactional
     public Book addBook(CreateBookCommand command) {
         Book book = toBook(command);
-        return repository.save(book);
+//        return repository.save(book);
+        return book;
     }
 
     private Book toBook(CreateBookCommand command) {

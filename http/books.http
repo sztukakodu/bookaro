@@ -1,1 +1,21 @@
 GET http://localhost:8080/catalog
+
+
+###
+GET http://localhost:8080/authors
+
+###
+
+POST http://localhost:8080/admin/data
+
+###
+
+POST http://localhost:8080/catalog
+Content-Type: application/json
+
+{
+  "title": "Designing Data-Intensive Applications",
+  "authors": [1],
+  "year": 2005,
+  "price": 125
+}
